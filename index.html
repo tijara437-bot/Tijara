@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>التجارة - مفكرة الدكان</title>
+    <meta name="theme-color" content="#2c3e50">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="التجارة">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            padding: 10px;
+            min-height: 100vh;
+        }
+
+        #app {
+            max-width: 800px;
+            margin: 0 auto;
+            padding-bottom: 80px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        header h1 { font-size: 28px; margin-bottom: 5px; }
+        header p { opacity: 0.9; font-size: 14px; }
+
+        nav {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 8px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 70px;
+        }
+
+        .tab-btn:hover {
+            background: #ecf0f1;
+            color: #1a1a2e;
+        }
+
+        .tab-btn.active {
+            background: #3498db;
+            color: white;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .tab-btn:active {
+            transform: scale(0.95);
+        }
+
+        .dark-mode nav {
+            background: #0f1a2e;
+        }
+
+        .dark-mode .tab-btn {
+            color: #ecf0f1;
+            font-weight: 800;
+        }
+
+        .dark-mode .tab-btn:hover {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .dark-mode .tab-btn.active {
+            background: #3498db;
+            color: white;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        form input, form select, form textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+            transition: border 0.3s;
+            background: #fafafa;
+        }
+
+        form input::placeholder,
+        form select::placeholder,
+        form textarea::placeholder {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        form input:focus, form select:focus, form textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            background: white;
+            color: #1a1a2e;
+        }
+
+        form button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        form button:active { transform: scale(0.96); }
+
+        .goods-table input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a2e;
+            background: #fafafa;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .goods-table input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+            color: #1a1a2e;
+        }
+
+        .goods-table input::placeholder {
+            color: #999;
+            font-weight: 500;
+        }
+
+        #existingCash {
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        #existingCash::placeholder {
+            color: #999;
+            font-weight: 500;
+        }
+
+        .dark-mode form input,
+        .dark-mode form select,
+        .dark-mode form textarea {
+            background: #1a1a2e;
+            color: #ecf0f1;
+            border-color: #444;
+        }
+
+        .dark-mode form input::placeholder,
+        .dark-mode form select::placeholder,
+        .dark-mode form textarea::placeholder {
+            color: #888;
+        }
+
+        .dark-mode form input:focus,
+        .dark-mode form select:focus,
+        .dark-mode form textarea:focus {
+            background: #1a2a3e;
+            color: #ecf0f1;
+            border-color: #3498db;
+        }
+
+        .dark-mode .goods-table input {
+            background: #1a1a2e;
+            color: #ecf0f1;
+            border-color: #444;
+        }
+
+        .dark-mode .goods-table input::placeholder {
+            color: #888;
+        }
+
+        .dark-mode .goods-table input:focus {
+            background: #1a2a3e;
+            color: #ecf0f1;
+            border-color: #3498db;
+        }
+
+        .dark-mode #existingCash {
+            background: #1a1a2e;
+            color: #f39c12;
+            border-color: #444;
+        }
+
+        .dark-mode #existingCash::placeholder {
+            color: #888;
+        }
+
+        .debt-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-right: 5px solid #3498db;
+            transition: all 0.2s;
+        }
+
+        .debt-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .debt-card .customer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .debt-card .customer-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .debt-card .customer-phone {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        /* ===== جدول بيانات العميل (نفس تصميم جدول الديون) ===== */
+        .debt-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 14px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .debt-data-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .debt-data-table td {
+            padding: 10px 8px;
+            text-align: center;
+            background: white;
+            border-bottom: 1px solid #ecf0f1;
+            font-weight: 500;
+        }
+
+        .debt-data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .debt-data-table .amount {
+            color: #2980b9;
+            font-weight: bold;
+        }
+
+        .debt-data-table .paid {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .debt-data-table .remaining {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .debt-data-table .remaining.paid {
+            color: #27ae60;
+        }
+
+        .debt-data-table .notes {
+            color: #2c3e50;
+            font-size: 13px;
+        }
+
+        /* ===== وضع الليل ===== */
+        .dark-mode .debt-data-table td {
+            background: #16213e;
+            color: #eee;
+            border-bottom-color: #2c3e50;
+        }
+
+        .dark-mode .debt-data-table th {
+            background: #1a1a2e !important;
+        }
+
+        .dark-mode .debt-data-table .notes {
+            color: #ddd;
+        }
+
+        .payments-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+
+        .payments-table th {
+            background: #ecf0f1;
+            padding: 8px;
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .payments-table td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .payments-table tr:hover td {
+            background: #ebf5fb;
+        }
+
+        .payments-table .payment-row {
+            background: white;
+        }
+
+        .payments-table .debt-row {
+            background: #fdebd0;
+        }
+
+        .payments-table .debt-row td {
+            color: #e67e22;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-buttons button:active { transform: scale(0.95); }
+
+        .btn-pay {
+            background: #d5f5e3;
+            color: #27ae60;
+        }
+
+        .btn-pay:hover { background: #a9dfbf; }
+
+        .btn-add-debt {
+            background: #fdebd0;
+            color: #e67e22;
+        }
+
+        .btn-add-debt:hover { background: #f5cba7; }
+
+        .btn-delete {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+
+        .btn-delete:hover { background: #f5b7b1; }
+
+        .payment-form-container {
+            background: #ebf5fb;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .payment-form-container.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        .payment-form-container .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .payment-form-container .form-row input,
+        .payment-form-container .form-row select {
+            flex: 1;
+            min-width: 120px;
+            margin-bottom: 0;
+        }
+
+        .payment-form-container .form-row button {
+            flex: 0 0 auto;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .payment-form-container .form-row button.cancel {
+            background: #95a5a6;
+        }
+
+        .dark-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: transparent;
+            color: #2c3e50;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 22px;
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dark-toggle:hover {
+            background: rgba(0, 0, 0, 0.05);
+            transform: scale(1.1);
+        }
+
+        .dark-toggle:active {
+            transform: scale(0.9);
+        }
+
+        .dark-mode .dark-toggle {
+            color: #ecf0f1;
+        }
+
+        .dark-mode .dark-toggle:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .dark-mode {
+            background: #1a1a2e;
+        }
+
+        .dark-mode .card {
+            background: #16213e;
+            color: #eee;
+        }
+
+        .dark-mode .debt-card {
+            background: #1a1a2e;
+            color: #eee;
+        }
+
+        .dark-mode .debt-card .customer-name {
+            color: #eee;
+        }
+
+        .dark-mode .debt-card .debt-summary {
+            background: #16213e;
+        }
+
+        .dark-mode .payments-table th {
+            background: #2c3e50;
+            color: #eee;
+        }
+
+        .dark-mode .payments-table td {
+            border-bottom-color: #2c3e50;
+        }
+
+        .dark-mode .payments-table tr:hover td {
+            background: #1a2a3e;
+        }
+
+        .dark-mode .payment-form-container {
+            background: #1a2a3e;
+            border-color: #2ecc71;
+        }
+
+        .dark-mode #productFormContainer > div,
+        .dark-mode #debtFormContainer > div {
+            background: #1a2a3e;
+            border-color: #2ecc71;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 999;
+            animation: slideUp 0.3s;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast-success { background: #27ae60; }
+        .toast-error { background: #e74c3c; }
+
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(50px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .summary-item {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .summary-item span {
+            font-size: 12px;
+            color: #7f8c8d;
+            display: block;
+        }
+
+        .summary-item strong {
+            font-size: 20px;
+            display: block;
+            margin-top: 5px;
+        }
+
+        #debtOrigin {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+            background: #fafafa;
+            transition: border 0.3s;
+            cursor: pointer;
+        }
+
+        #debtOrigin:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            background: white;
+            color: #1a1a2e;
+        }
+
+        #debtOrigin option {
+            padding: 8px;
+        }
+
+        #debtOrigin option:first-child {
+            color: #999;
+        }
+
+        .dark-mode #debtOrigin {
+            background: #1a1a2e;
+            color: #ecf0f1;
+            border-color: #444;
+        }
+
+        .dark-mode #debtOrigin:focus {
+            background: #1a2a3e;
+            color: #ecf0f1;
+            border-color: #3498db;
+        }
+
+        .goods-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+
+        .goods-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 8px 5px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .goods-table td {
+            padding: 5px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .btn-add-row {
+            background: #ebf5fb;
+            color: #2980b9;
+            border: 1px dashed #2980b9;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-add-row:hover {
+            background: #d6eaf8;
+        }
+
+        .btn-remove-row {
+            background: #fadbd8;
+            color: #e74c3c;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn-remove-row:hover {
+            background: #f5b7b1;
+        }
+
+        .goods-table .total-row {
+            background: #ebf5fb;
+            font-weight: bold;
+        }
+
+        .goods-table .total-row td {
+            padding: 8px;
+            text-align: center;
+        }
+
+        .goods-table .total-row td:first-child {
+            text-align: left;
+        }
+
+        .pwa-install-banner {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            right: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 14px 16px;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            z-index: 1000;
+            animation: slideUp 0.3s;
+        }
+
+        .pwa-install-banner.show { display: flex; }
+
+        .pwa-install-banner span { font-size: 14px; font-weight: 600; }
+
+        .pwa-install-banner .pwa-buttons { display: flex; gap: 8px; flex-shrink: 0; }
+
+        .pwa-install-banner button {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .pwa-install-banner .pwa-install-btn {
+            background: white;
+            color: #2c3e50;
+        }
+
+        .pwa-install-banner .pwa-dismiss-btn {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            .tab-btn {
+                font-size: 12px;
+                padding: 10px 5px;
+                min-width: 50px;
+            }
+
+            .payment-form-container .form-row input,
+            .payment-form-container .form-row select {
+                min-width: 100%;
+            }
+
+            .debt-card .customer-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .goods-table {
+                font-size: 11px;
+            }
+
+            .goods-table input {
+                font-size: 11px;
+                padding: 4px;
+                min-width: 50px;
+            }
+
+            .goods-table th {
+                font-size: 10px;
+                padding: 4px 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="dark-toggle" onclick="toggleDarkMode()">🌙</button>
+
+    <div id="app">
+        <header>
+            <h1>📦 التجارة</h1>
+            <p>مفكرة الدكان الذكية</p>
+        </header>
+
+        <nav>
+            <button class="tab-btn active" data-tab="products">📦 البضاعة</button>
+            <button class="tab-btn" data-tab="debts">💰 الديون</button>
+            <button class="tab-btn" data-tab="expenses">💸 المصروفات</button>
+            <button class="tab-btn" data-tab="transactions">📊 المحاسبة</button>
+        </nav>
+
+        <!-- ====== تبويب البضاعة ====== -->
+        <div id="products" class="tab-content active">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="margin: 0;">📋 قائمة البضاعة</h3>
+                    <button onclick="toggleProductForm()" id="toggleProductBtn" style="
+                        background: linear-gradient(135deg, #27ae60, #2ecc71);
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        padding: 8px 16px;
+                        font-size: 14px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                        box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+                        white-space: nowrap;
+                    ">
+                        ➕ إضافة بضاعة
+                    </button>
+                </div>
+
+                <div id="productFormContainer" style="display: none; margin-bottom: 15px;">
+                    <div style="background: #f0f9f0; border: 2px solid #27ae60; border-radius: 12px; padding: 18px; animation: fadeIn 0.3s;">
+                        <h3 style="margin-top: 0; margin-bottom: 15px; color: #27ae60;">➕ إضافة بضاعة جديدة</h3>
+                        <form id="productForm">
+                            <input type="text" id="prodName" placeholder="اسم البضاعة" required>
+                            <input type="number" id="prodQuantity" placeholder="الكمية" required min="1">
+                            <input type="number" id="prodPrice" placeholder="ثمن الفرد" step="0.01" required min="0">
+                            <input type="number" id="prodCost" placeholder="التكاليف (الحمل)" step="0.01" min="0" oninput="calculateProductTotal()">
+                            <input type="number" id="prodTotal" placeholder="الثمن الإجمالي" step="0.01" readonly style="background: #e8f0fe; font-weight: bold; color: #1a1a2e;">
+                            <div style="display: flex; gap: 10px;">
+                                <button type="submit" style="flex: 2; background: linear-gradient(135deg, #27ae60, #2ecc71);">إضافة البضاعة</button>
+                                <button type="button" onclick="toggleProductForm()" style="flex: 1; background: #95a5a6;">إلغاء</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                    <table id="productTable" style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 550px;">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #2c3e50, #3498db); color: white;">
+                                <th style="padding: 10px 8px; text-align: center; border-radius: 8px 0 0 0;">📦 اسم البضاعة</th>
+                                <th style="padding: 10px 8px; text-align: center;">🔢 الكمية</th>
+                                <th style="padding: 10px 8px; text-align: center;">💰 ثمن الفرد</th>
+                                <th style="padding: 10px 8px; text-align: center;">📦 التكاليف</th>
+                                <th style="padding: 10px 8px; text-align: center;">💵 الثمن الإجمالي</th>
+                                <th style="padding: 10px 8px; text-align: center;">📅 تاريخ الإضافة</th>
+                                <th style="padding: 10px 8px; text-align: center; border-radius: 0 8px 0 0;">⚙️</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== تبويب الديون ====== -->
+        <div id="debts" class="tab-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="margin: 0;">📋 قائمة الديون</h3>
+                    <button onclick="toggleDebtForm()" id="toggleDebtBtn" style="
+                        background: linear-gradient(135deg, #27ae60, #2ecc71);
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        padding: 8px 16px;
+                        font-size: 14px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                        box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+                        white-space: nowrap;
+                    ">
+                        ➕ إضافة عميل
+                    </button>
+                </div>
+
+                <div id="debtFormContainer" style="display: none; margin-bottom: 15px;">
+                    <div style="background: #f0f9f0; border: 2px solid #27ae60; border-radius: 12px; padding: 18px; animation: fadeIn 0.3s;">
+                        <h3 style="margin-top: 0; margin-bottom: 15px; color: #27ae60;">➕ إضافة عميل جديد</h3>
+                        <form id="debtForm">
+                            <input type="text" id="debtName" placeholder="اسم العميل" required>
+                            <input type="text" id="debtPhone" placeholder="رقم الهاتف">
+
+                            <select id="debtOrigin" required onchange="toggleDebtOrigin()">
+                                <option value="">-- اختر أصل الدين --</option>
+                                <option value="cash">💰 نقد</option>
+                                <option value="goods">📦 بضاعة</option>
+                            </select>
+
+                            <div id="cashSection" style="display: none; animation: fadeIn 0.3s;">
+                                <input type="number" id="debtAmount" placeholder="المبلغ" step="0.01" min="0.01">
+                                <input type="text" id="debtNotes" placeholder="ملاحظات">
+                            </div>
+
+                            <div id="goodsSection" style="display: none; animation: fadeIn 0.3s;">
+                                <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                                    <table class="goods-table" id="goodsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>📦 اسم البضاعة</th>
+                                                <th>🔢 الكمية</th>
+                                                <th>💰 سعر الفرد</th>
+                                                <th>💵 الإجمالي</th>
+                                                <th>💵 دفع</th>
+                                                <th>📊 بقي عليه</th>
+                                                <th>⚙️</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="goodsTableBody">
+                                            <tr class="goods-row">
+                                                <td><input type="text" class="goods-name" placeholder="اسم البضاعة"></td>
+                                                <td><input type="number" class="goods-qty" placeholder="الكمية" min="1" oninput="calculateGoodsRow(this)"></td>
+                                                <td><input type="number" class="goods-price" placeholder="سعر الفرد" step="0.01" min="0" oninput="calculateGoodsRow(this)"></td>
+                                                <td><input type="text" class="goods-total" readonly style="background:#e8f0fe; font-weight:bold; color:#1a1a2e; text-align:center;"></td>
+                                                <td><input type="number" class="goods-paid" placeholder="المدفوع" step="0.01" min="0" oninput="calculateGoodsRow(this)"></td>
+                                                <td><input type="text" class="goods-remaining" readonly style="background:#fdebd0; font-weight:bold; color:#1a1a2e; text-align:center;"></td>
+                                                <td><button type="button" class="btn-remove-row" onclick="removeGoodsRow(this)">✖</button></td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="7">
+                                                    <button type="button" class="btn-add-row" onclick="addGoodsRow()">➕ إضافة بضاعة</button>
+                                                </td>
+                                            </tr>
+                                            <tr class="total-row">
+                                                <td colspan="3" style="text-align: left;">💰 الإجمالي الكلي:</td>
+                                                <td id="goodsTotalAmount" style="color: #2980b9; font-size: 16px;">0.00</td>
+                                                <td id="goodsTotalPaid" style="color: #27ae60; font-size: 16px;">0.00</td>
+                                                <td id="goodsTotalRemaining" style="color: #e74c3c; font-size: 16px; font-weight: bold;">0.00</td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                <button type="submit" style="flex: 2; background: linear-gradient(135deg, #27ae60, #2ecc71);">إضافة العميل</button>
+                                <button type="button" onclick="toggleDebtForm()" style="flex: 1; background: #95a5a6;">إلغاء</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="debtList"></div>
+            </div>
+        </div>
+
+        <!-- ====== تبويب المصروفات ====== -->
+        <div id="expenses" class="tab-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="margin: 0;">📋 قائمة المصروفات</h3>
+                    <button onclick="toggleExpenseForm()" id="toggleExpenseBtn" style="
+                        background: linear-gradient(135deg, #e67e22, #d35400);
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        padding: 8px 16px;
+                        font-size: 14px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                        box-shadow: 0 2px 8px rgba(230, 126, 34, 0.3);
+                        white-space: nowrap;
+                    ">
+                        ➕ إضافة مصروف
+                    </button>
+                </div>
+
+                <div id="expenseFormContainer" style="display: none; margin-bottom: 15px;">
+                    <div style="background: #fdebd0; border: 2px solid #e67e22; border-radius: 12px; padding: 18px; animation: fadeIn 0.3s;">
+                        <h3 style="margin-top: 0; margin-bottom: 15px; color: #e67e22;">➕ إضافة مصروف جديد</h3>
+                        <form id="expenseForm">
+                            <input type="number" id="expenseAmount" placeholder="المبلغ" step="0.01" required min="0.01">
+                            <input type="date" id="expenseDate">
+                            <textarea id="expenseNotes" placeholder="الملاحظات" rows="3" required></textarea>
+                            <div style="display: flex; gap: 10px;">
+                                <button type="submit" style="flex: 2; background: linear-gradient(135deg, #e67e22, #d35400);">إضافة المصروف</button>
+                                <button type="button" onclick="toggleExpenseForm()" style="flex: 1; background: #95a5a6;">إلغاء</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                    <table id="expenseTable" style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 400px;">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #2c3e50, #e67e22); color: white;">
+                                <th style="padding: 10px 8px; text-align: center; border-radius: 8px 0 0 0;">💰 المبلغ</th>
+                                <th style="padding: 10px 8px; text-align: center;">📅 التاريخ</th>
+                                <th style="padding: 10px 8px; text-align: center;">📝 الملاحظات</th>
+                                <th style="padding: 10px 8px; text-align: center; border-radius: 0 8px 0 0;">⚙️</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseTableBody"></tbody>
+                        <tfoot id="expenseTableFooter" style="display: none;">
+                            <tr style="background: #fdebd0; font-weight: bold;">
+                                <td colspan="4" style="padding: 10px; text-align: center; border-top: 2px solid #e67e22;">
+                                    <span id="expenseSummary"></span>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== تبويب المحاسبة ====== -->
+        <div id="transactions" class="tab-content">
+            <div class="card summary-card">
+                <h3>📊 العناصر الجاهزة</h3>
+                <div class="summary-grid">
+                    <div class="summary-item" style="background: #ebf5fb; color: #2980b9;">
+                        <span>📦 قيمة البضاعة المسجلة</span>
+                        <strong id="totalProductsValue">0.00</strong>
+                    </div>
+                    <div class="summary-item" style="background: #fdebd0; color: #e67e22;">
+                        <span>💰 قيمة الديون غير المسددة</span>
+                        <strong id="totalDebtsRemaining">0.00</strong>
+                    </div>
+                    <div class="summary-item" style="background: #fadbd8; color: #e74c3c;">
+                        <span>💸 قيمة المصروفات</span>
+                        <strong id="totalExpensesAmount">0.00</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📦 البضاعة الموجودة</h3>
+                <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                    <table class="goods-table" id="existingStockTable" style="min-width: 550px;">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #2c3e50, #3498db); color: white;">
+                                <th style="padding: 10px 8px; text-align: center; border-radius: 8px 0 0 0;">📦 اسم البضاعة</th>
+                                <th style="padding: 10px 8px; text-align: center;">🔢 الكمية</th>
+                                <th style="padding: 10px 8px; text-align: center;">💰 ثمن الفرد</th>
+                                <th style="padding: 10px 8px; text-align: center;">📦 الحمل</th>
+                                <th style="padding: 10px 8px; text-align: center;">💵 الثمن الإجمالي</th>
+                                <th style="padding: 10px 8px; text-align: center; border-radius: 0 8px 0 0;">⚙️</th>
+                            </tr>
+                        </thead>
+                        <tbody id="existingStockBody">
+                            <tr class="stock-row">
+                                <td><input type="text" class="stock-name" placeholder="اسم البضاعة"></td>
+                                <td><input type="number" class="stock-qty" placeholder="الكمية" min="1" oninput="calculateStockRow(this)"></td>
+                                <td><input type="number" class="stock-price" placeholder="ثمن الفرد" step="0.01" min="0" oninput="calculateStockRow(this)"></td>
+                                <td><input type="number" class="stock-cost" placeholder="الحمل" step="0.01" min="0" oninput="calculateStockRow(this)"></td>
+                                <td><input type="text" class="stock-total" readonly style="background:#e8f0fe; font-weight:bold; color:#1a1a2e; text-align:center;"></td>
+                                <td><button type="button" class="btn-remove-row" onclick="removeStockRow(this)">✖</button></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="6">
+                                    <button type="button" class="btn-add-row" onclick="addStockRow()">➕ إضافة بضاعة</button>
+                                </td>
+                            </tr>
+                            <tr class="total-row" style="background: #ebf5fb; font-weight: bold;">
+                                <td colspan="4" style="text-align: left;">💰 القيمة الإجمالية للبضاعة الموجودة:</td>
+                                <td id="existingStockTotal" style="color: #2980b9; font-size: 18px;">0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>💰 النقد الموجود</h3>
+                <input type="number" id="existingCash" placeholder="النقد الموجود" step="0.01" min="0" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; font-size:16px; font-weight:700; color:#1a1a2e; background:#fef9e7;" oninput="calculateProfitLoss()">
+            </div>
+
+            <div class="card">
+                <h3>📈 نتيجة الربح / الخسارة</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: center;">
+                    <div style="padding: 20px; background: #d5f5e3; border-radius: 12px; border: 2px solid #27ae60;">
+                        <div style="font-size: 14px; color: #27ae60; font-weight: bold;">✅ الربح</div>
+                        <div id="profitResult" style="font-size: 28px; font-weight: bold; color: #27ae60; margin-top: 5px;">0.00</div>
+                    </div>
+                    <div style="padding: 20px; background: #fadbd8; border-radius: 12px; border: 2px solid #e74c3c;">
+                        <div style="font-size: 14px; color: #e74c3c; font-weight: bold;">❌ الخسارة</div>
+                        <div id="lossResult" style="font-size: 28px; font-weight: bold; color: #e74c3c; margin-top: 5px;">0.00</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; padding: 15px; background: #ebf5fb; border-radius: 10px; text-align: center;">
+                    <span style="font-size: 14px; color: #7f8c8d;">📊 إجمالي الأصول: </span>
+                    <strong id="totalAssets" style="color: #2980b9;">0.00</strong>
+                    <span style="font-size: 14px; color: #7f8c8d; margin-right: 15px;"> | </span>
+                    <span style="font-size: 14px; color: #7f8c8d;">📋 إجمالي الالتزامات: </span>
+                    <strong id="totalLiabilities" style="color: #e74c3c;">0.00</strong>
+                </div>
+            </div>
+
+            <div class="card" style="text-align: center;">
+                <button onclick="calculateProfitLoss()" style="
+                    background: linear-gradient(135deg, #3498db, #2980b9);
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    padding: 12px 30px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: transform 0.2s;
+                " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    🔄 تحديث البيانات
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pwaInstallBanner" class="pwa-install-banner">
+        <span>📲 ثبّت التطبيق على هاتفك للوصول السريع</span>
+        <div class="pwa-buttons">
+            <button class="pwa-install-btn" onclick="installPWA()">تثبيت</button>
+            <button class="pwa-dismiss-btn" onclick="dismissPWABanner()">لاحقًا</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // =====  قاعدة بيانات IndexedDB  =====
+        // ============================================
+        const DB_NAME = 'TijaraDB';
+        const DB_VERSION = 3;
+        let db = null;
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('products')) {
+                        db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!db.objectStoreNames.contains('debts')) {
+                        db.createObjectStore('debts', { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!db.objectStoreNames.contains('payments')) {
+                        db.createObjectStore('payments', { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!db.objectStoreNames.contains('expenses')) {
+                        db.createObjectStore('expenses', { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!db.objectStoreNames.contains('transactions')) {
+                        db.createObjectStore('transactions', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    resolve(db);
+                };
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        function addData(storeName, data) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.add(data);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function getAllData(storeName) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function deleteData(storeName, id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.delete(id);
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function updateData(storeName, id, data) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.put({ ...data, id });
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function getDataByIndex(storeName, indexName, value) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, 'readonly');
+                const store = transaction.objectStore(storeName);
+                const index = store.index(indexName);
+                const request = index.getAll(value);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // ===== البضاعة =====
+        function toggleProductForm() {
+            const container = document.getElementById('productFormContainer');
+            const btn = document.getElementById('toggleProductBtn');
+            if (container.style.display === 'none' || container.style.display === '') {
+                container.style.display = 'block';
+                btn.textContent = '✖ إغلاق';
+                btn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                btn.style.boxShadow = '0 2px 8px rgba(231, 76, 60, 0.3)';
+                setTimeout(() => { container.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+            } else {
+                container.style.display = 'none';
+                btn.textContent = '➕ إضافة بضاعة';
+                btn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                btn.style.boxShadow = '0 2px 8px rgba(39, 174, 96, 0.3)';
+                document.getElementById('productForm').reset();
+                document.getElementById('prodTotal').value = '';
+            }
+        }
+
+        function calculateProductTotal() {
+            const quantity = parseFloat(document.getElementById('prodQuantity').value) || 0;
+            const price = parseFloat(document.getElementById('prodPrice').value) || 0;
+            const cost = parseFloat(document.getElementById('prodCost').value) || 0;
+            document.getElementById('prodTotal').value = ((quantity * price) + cost).toFixed(2);
+        }
+
+        document.getElementById('prodQuantity').addEventListener('input', calculateProductTotal);
+        document.getElementById('prodPrice').addEventListener('input', calculateProductTotal);
+        document.getElementById('prodCost').addEventListener('input', calculateProductTotal);
+
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('prodName').value.trim();
+            const quantity = parseInt(document.getElementById('prodQuantity').value);
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            const cost = parseFloat(document.getElementById('prodCost').value) || 0;
+            const total = (quantity * price) + cost;
+            if (!name || quantity <= 0 || price <= 0) {
+                showToast('❌ يرجى ملء جميع الحقول بشكل صحيح', 'error');
+                return;
+            }
+            try {
+                await addData('products', { name, quantity, price, cost, total, entry_date: new Date().toISOString().split('T')[0] });
+                showToast(`✅ تم إضافة "${name}" بنجاح`, 'success');
+                document.getElementById('productForm').reset();
+                document.getElementById('prodTotal').value = '';
+                toggleProductForm();
+                loadProducts();
+            } catch (error) {
+                showToast('❌ حدث خطأ أثناء الإضافة', 'error');
+            }
+        });
+
+        async function loadProducts() {
+            try {
+                const products = await getAllData('products');
+                const tbody = document.getElementById('productTableBody');
+                if (products.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:#999;font-size:16px;"><div style="font-size:48px;margin-bottom:10px;">📦</div>لا توجد بضاعة<br><span style="font-size:13px;">اضغط على "إضافة بضاعة" لإضافة منتج جديد</span></td></tr>`;
+                    return;
+                }
+                const sortedProducts = [...products].sort((a, b) => b.id - a.id);
+                tbody.innerHTML = sortedProducts.map((p, index) => {
+                    const rowColor = index % 2 === 0 ? '#f8f9fa' : 'white';
+                    return `<tr style="background:${rowColor};border-bottom:1px solid #ecf0f1;" onmouseover="this.style.background='#ebf5fb'" onmouseout="this.style.background='${rowColor}'">
+                        <td style="padding:10px 8px;text-align:center;font-weight:bold;color:${p.quantity < 5 ? '#e74c3c' : '#2c3e50'};">${p.name}${p.quantity < 5 ? ' ⚠️' : ''}</td>
+                        <td style="padding:10px 8px;text-align:center;font-weight:bold;color:${p.quantity < 5 ? '#e74c3c' : '#2c3e50'};">${p.quantity}</td>
+                        <td style="padding:10px 8px;text-align:center;color:#2980b9;font-weight:bold;">${p.price.toFixed(2)}</td>
+                        <td style="padding:10px 8px;text-align:center;color:#e67e22;font-weight:bold;">${(p.cost || 0).toFixed(2)}</td>
+                        <td style="padding:10px 8px;text-align:center;color:#27ae60;font-weight:bold;">${(p.total || (p.quantity * p.price + (p.cost || 0))).toFixed(2)}</td>
+                        <td style="padding:10px 8px;text-align:center;color:#7f8c8d;font-size:12px;">${p.entry_date || '---'}</td>
+                        <td style="padding:10px 8px;text-align:center;"><button onclick="deleteProduct(${p.id})" style="background:#fadbd8;color:#e74c3c;border:none;border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;font-weight:bold;">🗑️ حذف</button></td>
+                    </tr>`;
+                }).join('');
+            } catch (error) { console.error(error); }
+        }
+
+        window.deleteProduct = async function(id) {
+            if (confirm('هل أنت متأكد من حذف هذه البضاعة؟')) {
+                try {
+                    await deleteData('products', id);
+                    showToast('✅ تم الحذف', 'success');
+                    loadProducts();
+                } catch (error) { showToast('❌ حدث خطأ', 'error'); }
+            }
+        };
+
+        // ===== الديون =====
+        function toggleDebtForm() {
+            const container = document.getElementById('debtFormContainer');
+            const btn = document.getElementById('toggleDebtBtn');
+            if (container.style.display === 'none' || container.style.display === '') {
+                container.style.display = 'block';
+                btn.textContent = '✖ إغلاق';
+                btn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                btn.style.boxShadow = '0 2px 8px rgba(231, 76, 60, 0.3)';
+                document.getElementById('debtForm').reset();
+                document.getElementById('debtOrigin').value = '';
+                document.getElementById('cashSection').style.display = 'none';
+                document.getElementById('goodsSection').style.display = 'none';
+                document.getElementById('debtAmount').required = false;
+                setTimeout(() => { container.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+            } else {
+                container.style.display = 'none';
+                btn.textContent = '➕ إضافة عميل';
+                btn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                btn.style.boxShadow = '0 2px 8px rgba(39, 174, 96, 0.3)';
+                document.getElementById('debtForm').reset();
+                document.getElementById('debtOrigin').value = '';
+                document.getElementById('cashSection').style.display = 'none';
+                document.getElementById('goodsSection').style.display = 'none';
+            }
+        }
+
+        function toggleDebtOrigin() {
+            const origin = document.getElementById('debtOrigin').value;
+            document.getElementById('cashSection').style.display = origin === 'cash' ? 'block' : 'none';
+            document.getElementById('goodsSection').style.display = origin === 'goods' ? 'block' : 'none';
+            document.getElementById('debtAmount').required = origin === 'cash';
+        }
+
+        function calculateGoodsRow(input) {
+            const row = input.closest('tr');
+            const qty = parseFloat(row.querySelector('.goods-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.goods-price').value) || 0;
+            const total = qty * price;
+            row.querySelector('.goods-total').value = total.toFixed(2);
+            const paid = parseFloat(row.querySelector('.goods-paid').value) || 0;
+            const remaining = total - paid;
+            row.querySelector('.goods-remaining').value = remaining.toFixed(2);
+            row.querySelector('.goods-remaining').style.color = remaining > 0 ? '#e74c3c' : '#27ae60';
+            calculateGoodsTotal();
+        }
+
+        function calculateGoodsTotal() {
+            const totals = document.querySelectorAll('.goods-total');
+            const paids = document.querySelectorAll('.goods-paid');
+            let totalSum = 0, paidSum = 0;
+            totals.forEach(t => totalSum += parseFloat(t.value) || 0);
+            paids.forEach(p => paidSum += parseFloat(p.value) || 0);
+            const remainingSum = totalSum - paidSum;
+            document.getElementById('goodsTotalAmount').textContent = totalSum.toFixed(2);
+            document.getElementById('goodsTotalPaid').textContent = paidSum.toFixed(2);
+            document.getElementById('goodsTotalRemaining').textContent = remainingSum.toFixed(2);
+            document.getElementById('goodsTotalRemaining').style.color = remainingSum > 0 ? '#e74c3c' : '#27ae60';
+        }
+
+        function addGoodsRow() {
+            const tbody = document.getElementById('goodsTableBody');
+            const row = document.createElement('tr');
+            row.className = 'goods-row';
+            row.innerHTML = `
+                <td><input type="text" class="goods-name" placeholder="اسم البضاعة"></td>
+                <td><input type="number" class="goods-qty" placeholder="الكمية" min="1" oninput="calculateGoodsRow(this)"></td>
+                <td><input type="number" class="goods-price" placeholder="سعر الفرد" step="0.01" min="0" oninput="calculateGoodsRow(this)"></td>
+                <td><input type="text" class="goods-total" readonly style="background:#e8f0fe;font-weight:bold;color:#1a1a2e;text-align:center;"></td>
+                <td><input type="number" class="goods-paid" placeholder="المدفوع" step="0.01" min="0" oninput="calculateGoodsRow(this)"></td>
+                <td><input type="text" class="goods-remaining" readonly style="background:#fdebd0;font-weight:bold;color:#1a1a2e;text-align:center;"></td>
+                <td><button type="button" class="btn-remove-row" onclick="removeGoodsRow(this)">✖</button></td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function removeGoodsRow(btn) {
+            const rows = document.querySelectorAll('.goods-row');
+            if (rows.length <= 1) { showToast('❌ يجب أن يكون هناك صف واحد على الأقل', 'error'); return; }
+            btn.closest('tr').remove();
+            calculateGoodsTotal();
+        }
+
+        document.getElementById('debtForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('debtName').value.trim();
+            const phone = document.getElementById('debtPhone').value.trim() || 'لا يوجد';
+            const debtOrigin = document.getElementById('debtOrigin').value;
+            let amount = 0, paid = 0;
+            let notes = '';
+            if (debtOrigin === 'cash') {
+                amount = parseFloat(document.getElementById('debtAmount').value);
+                notes = document.getElementById('debtNotes').value.trim() || '';
+                if (!amount || amount <= 0) { showToast('❌ يرجى إدخال مبلغ صحيح', 'error'); return; }
+            } else if (debtOrigin === 'goods') {
+                const rows = document.querySelectorAll('.goods-row');
+                let totalAmount = 0, totalPaid = 0;
+                rows.forEach(row => {
+                    const name = row.querySelector('.goods-name').value.trim();
+                    const qty = parseFloat(row.querySelector('.goods-qty').value) || 0;
+                    const price = parseFloat(row.querySelector('.goods-price').value) || 0;
+                    const paid = parseFloat(row.querySelector('.goods-paid').value) || 0;
+                    if (name && qty > 0 && price > 0) { totalAmount += qty * price; totalPaid += paid; }
+                });
+                if (totalAmount <= 0) { showToast('❌ يرجى إضافة بضاعة صحيحة', 'error'); return; }
+                amount = totalAmount;
+                paid = totalPaid;
+            } else { showToast('❌ يرجى اختيار أصل الدين', 'error'); return; }
+            if (!name) { showToast('❌ يرجى إدخال اسم العميل', 'error'); return; }
+            try {
+                await addData('debts', { 
+                    customer_name: name, 
+                    phone, 
+                    total_amount: amount, 
+                    paid_amount: paid, 
+                    remaining_amount: amount - paid, 
+                    notes: notes, 
+                    debt_type: debtOrigin, 
+                    created_at: new Date().toISOString().split('T')[0] 
+                });
+                showToast(`✅ تم إضافة "${name}" بنجاح`, 'success');
+                document.getElementById('debtForm').reset();
+                document.getElementById('debtOrigin').value = '';
+                document.getElementById('cashSection').style.display = 'none';
+                document.getElementById('goodsSection').style.display = 'none';
+                toggleDebtForm();
+                loadDebts();
+            } catch (error) { showToast('❌ حدث خطأ', 'error'); }
+        });
+
+        async function loadDebts() {
+            try {
+                const debts = await getAllData('debts');
+                const container = document.getElementById('debtList');
+                if (debts.length === 0) {
+                    container.innerHTML = `<div style="text-align:center;padding:40px;color:#999;"><div style="font-size:48px;margin-bottom:10px;">💰</div><p>لا توجد ديون</p><p style="font-size:13px;">اضغط على "إضافة عميل" لإضافة عميل جديد</p></div>`;
+                    return;
+                }
+                const sortedDebts = [...debts].sort((a, b) => b.id - a.id);
+                let html = '';
+                for (const debt of sortedDebts) {
+                    const payments = await getDataByIndex('payments', 'debt_id', debt.id);
+                    const sortedPayments = [...payments].sort((a, b) => b.id - a.id);
+                    const isFullyPaid = debt.remaining_amount <= 0;
+
+                    html += `<div class="debt-card" style="border-right-color:${isFullyPaid ? '#27ae60' : '#e74c3c'};">
+                        <div class="customer-header">
+                            <div>
+                                <span class="customer-name">${debt.customer_name}</span>
+                                <span class="customer-phone"> 📞 ${debt.phone}</span>
+                                ${isFullyPaid ? ' <span style="color:#27ae60;font-weight:bold;">✅ مدفوع بالكامل</span>' : ''}
+                                <span style="font-size:12px;color:#7f8c8d;margin-right:10px;">${debt.debt_type === 'cash' ? '💰 نقد' : '📦 بضاعة'}</span>
+                            </div>
+                            <div style="font-size:12px;color:#7f8c8d;">📅 ${debt.created_at || '---'}</div>
+                        </div>
+                        
+                        <!-- ===== جدول بيانات العميل ===== -->
+                        <table class="debt-data-table">
+                            <thead>
+                                <tr>
+                                    <th>💰 المبلغ</th>
+                                    <th>💵 المدفوع</th>
+                                    <th>📊 المتبقي</th>
+                                    <th>📝 الملاحظات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="amount">${debt.total_amount.toFixed(2)}</td>
+                                    <td class="paid">${debt.paid_amount.toFixed(2)}</td>
+                                    <td class="remaining ${isFullyPaid ? 'paid' : ''}">${debt.remaining_amount.toFixed(2)}</td>
+                                    <td class="notes">${debt.notes || '---'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        ${payments.length > 0 ? `
+                        <div style="margin:10px 0 5px 0;font-size:13px;color:#7f8c8d;">📜 سجل المعاملات (${payments.length})</div>
+                        <table class="payments-table"><thead><tr><th>📅 التاريخ</th><th>💰 المبلغ</th><th>📝 نوع العملية</th><th>📝 الملاحظات</th><th>⚙️</th></tr></thead><tbody>
+                        ${sortedPayments.map(p => `<tr class="${p.is_new_debt ? 'debt-row' : 'payment-row'}"><td>${p.payment_date || '---'}</td><td style="font-weight:bold;color:${p.is_new_debt ? '#e67e22' : '#27ae60'};">${p.is_new_debt ? '+' : ''}${p.amount.toFixed(2)}</td><td style="font-weight:bold;color:${p.is_new_debt ? '#e67e22' : '#27ae60'};">${p.is_new_debt ? '🟠 دين' : '🟢 تسديد'}</td><td style="font-size:12px;color:#7f8c8d;">${p.notes || '---'}</td><td><button onclick="deletePayment(${p.id}, ${debt.id}, ${p.amount})" style="background:#fadbd8;color:#e74c3c;border:none;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer;font-weight:bold;">🗑️</button></td></tr>`).join('')}
+                        </tbody></table>
+                        ` : `<div style="margin:10px 0;font-size:13px;color:#999;">لا توجد معاملات</div>`}
+                        
+                        <div class="action-buttons">
+                            ${!isFullyPaid ? `<button class="btn-pay" onclick="showPaymentForm(${debt.id})">💰 إضافة دفعة</button>` : ''}
+                            <button class="btn-add-debt" onclick="showNewDebtForm(${debt.id})">➕ دين جديد</button>
+                            <button class="btn-delete" onclick="deleteDebt(${debt.id})">🗑️ حذف العميل</button>
+                        </div>
+                        
+                        <!-- نماذج الدفع والإضافة -->
+                        <div id="paymentForm_${debt.id}" class="payment-form-container">
+                            <h4 style="margin-bottom:10px;color:#27ae60;">💰 إضافة دفعة جديدة</h4>
+                            <div class="form-row">
+                                <input type="number" id="paymentAmount_${debt.id}" placeholder="المبلغ" step="0.01" min="0.01" required>
+                                <input type="date" id="paymentDate_${debt.id}" value="${new Date().toISOString().split('T')[0]}">
+                                <input type="text" id="paymentNotes_${debt.id}" placeholder="ملاحظات">
+                                <button onclick="addPayment(${debt.id})">إضافة الدفعة</button>
+                                <button class="cancel" onclick="hidePaymentForm(${debt.id})">إلغاء</button>
+                            </div>
+                        </div>
+                        
+                        <div id="newDebtForm_${debt.id}" class="payment-form-container" style="border-color:#e67e22;">
+                            <h4 style="margin-bottom:10px;color:#e67e22;">➕ إضافة دين جديد لـ "${debt.customer_name}"</h4>
+                            <form id="newDebtForm_${debt.id}_form" onsubmit="event.preventDefault(); addNewDebt(${debt.id})">
+                                <input type="hidden" id="newDebtName_${debt.id}" value="${debt.customer_name}">
+                                <input type="hidden" id="newDebtPhone_${debt.id}" value="${debt.phone}">
+                                <select id="newDebtOrigin_${debt.id}" required onchange="toggleNewDebtOrigin(${debt.id})">
+                                    <option value="">-- اختر أصل الدين --</option>
+                                    <option value="cash">💰 نقد</option>
+                                    <option value="goods">📦 بضاعة</option>
+                                </select>
+                                <div id="newDebtCashSection_${debt.id}" style="display:none;animation:fadeIn 0.3s;">
+                                    <input type="number" id="newDebtAmount_${debt.id}" placeholder="المبلغ" step="0.01" min="0.01">
+                                    <input type="text" id="newDebtNotes_${debt.id}" placeholder="ملاحظات">
+                                </div>
+                                <div id="newDebtGoodsSection_${debt.id}" style="display:none;animation:fadeIn 0.3s;">
+                                    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+                                        <table class="goods-table" id="newDebtGoodsTable_${debt.id}">
+                                            <thead><tr><th>📦 اسم البضاعة</th><th>🔢 الكمية</th><th>💰 سعر الفرد</th><th>💵 الإجمالي</th><th>💵 دفع</th><th>📊 بقي عليه</th><th>⚙️</th></tr></thead>
+                                            <tbody id="newDebtGoodsBody_${debt.id}">
+                                                <tr class="goods-row">
+                                                    <td><input type="text" class="goods-name" placeholder="اسم البضاعة"></td>
+                                                    <td><input type="number" class="goods-qty" placeholder="الكمية" min="1" oninput="calculateNewDebtGoodsRow(${debt.id}, this)"></td>
+                                                    <td><input type="number" class="goods-price" placeholder="سعر الفرد" step="0.01" min="0" oninput="calculateNewDebtGoodsRow(${debt.id}, this)"></td>
+                                                    <td><input type="text" class="goods-total" readonly style="background:#e8f0fe;font-weight:bold;color:#1a1a2e;text-align:center;"></td>
+                                                    <td><input type="number" class="goods-paid" placeholder="المدفوع" step="0.01" min="0" oninput="calculateNewDebtGoodsRow(${debt.id}, this)"></td>
+                                                    <td><input type="text" class="goods-remaining" readonly style="background:#fdebd0;font-weight:bold;color:#1a1a2e;text-align:center;"></td>
+                                                    <td><button type="button" class="btn-remove-row" onclick="removeNewDebtGoodsRow(${debt.id}, this)">✖</button></td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr><td colspan="7"><button type="button" class="btn-add-row" onclick="addNewDebtGoodsRow(${debt.id})">➕ إضافة بضاعة</button></td></tr>
+                                                <tr class="total-row">
+                                                    <td colspan="3" style="text-align:left;">💰 الإجمالي الكلي:</td>
+                                                    <td id="newDebtTotalAmount_${debt.id}" style="color:#2980b9;font-size:16px;">0.00</td>
+                                                    <td id="newDebtTotalPaid_${debt.id}" style="color:#27ae60;font-size:16px;">0.00</td>
+                                                    <td id="newDebtTotalRemaining_${debt.id}" style="color:#e74c3c;font-size:16px;font-weight:bold;">0.00</td>
+                                                    <td></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div style="display:flex;gap:10px;margin-top:10px;">
+                                    <button type="submit" style="flex:2;background:linear-gradient(135deg,#e67e22,#d35400);">إضافة الدين</button>
+                                    <button type="button" class="cancel" onclick="hideNewDebtForm(${debt.id})" style="flex:1;background:#95a5a6;border:none;border-radius:8px;color:white;padding:12px;font-size:16px;font-weight:bold;cursor:pointer;">إلغاء</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>`;
+                }
+                container.innerHTML = html;
+            } catch (error) { console.error(error); }
+        }
+
+        // ===== دوال الدفعات =====
+        window.showPaymentForm = function(debtId) {
+            const form = document.getElementById(`paymentForm_${debtId}`);
+            if (form) { form.classList.add('show'); document.getElementById(`paymentAmount_${debtId}`).focus(); }
+        };
+        window.hidePaymentForm = function(debtId) {
+            const form = document.getElementById(`paymentForm_${debtId}`);
+            if (form) { form.classList.remove('show'); }
+        };
+
+        window.addPayment = async function(debtId) {
+            const amount = parseFloat(document.getElementById(`paymentAmount_${debtId}`).value);
+            const paymentDate = document.getElementById(`paymentDate_${debtId}`).value;
+            if (!amount || amount <= 0) { showToast('❌ يرجى إدخال مبلغ صحيح', 'error'); return; }
+            try {
+                const debts = await getAllData('debts');
+                const debt = debts.find(d => d.id === debtId);
+                if (!debt) { showToast('❌ العميل غير موجود', 'error'); return; }
+                if (amount > debt.remaining_amount) { showToast(`❌ المبلغ (${amount}) أكبر من المتبقي (${debt.remaining_amount.toFixed(2)})`, 'error'); return; }
+                await addData('payments', { debt_id: debtId, amount, payment_date: paymentDate || new Date().toISOString().split('T')[0], notes: '', is_new_debt: false });
+                const newPaid = debt.paid_amount + amount;
+                const newRemaining = debt.total_amount - newPaid;
+                await updateData('debts', debtId, { ...debt, paid_amount: newPaid, remaining_amount: newRemaining });
+                showToast(`✅ تم إضافة دفعة ${amount.toFixed(2)}`, 'success');
+                hidePaymentForm(debtId);
+                loadDebts();
+            } catch (error) { console.error(error); showToast('❌ حدث خطأ', 'error'); }
+        };
+
+        // ===== دوال إضافة دين جديد =====
+        function toggleNewDebtOrigin(debtId) {
+            const origin = document.getElementById(`newDebtOrigin_${debtId}`).value;
+            document.getElementById(`newDebtCashSection_${debtId}`).style.display = origin === 'cash' ? 'block' : 'none';
+            document.getElementById(`newDebtGoodsSection_${debtId}`).style.display = origin === 'goods' ? 'block' : 'none';
+            document.getElementById(`newDebtAmount_${debtId}`).required = origin === 'cash';
+        }
+
+        function calculateNewDebtGoodsRow(debtId, input) {
+            const row = input.closest('tr');
+            const qty = parseFloat(row.querySelector('.goods-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.goods-price').value) || 0;
+            const total = qty * price;
+            row.querySelector('.goods-total').value = total.toFixed(2);
+            const paid = parseFloat(row.querySelector('.goods-paid').value) || 0;
+            const remaining = total - paid;
+            row.querySelector('.goods-remaining').value = remaining.toFixed(2);
+            row.querySelector('.goods-remaining').style.color = remaining > 0 ? '#e74c3c' : '#27ae60';
+            calculateNewDebtGoodsTotal(debtId);
+        }
+
+        function calculateNewDebtGoodsTotal(debtId) {
+            const tbody = document.getElementById(`newDebtGoodsBody_${debtId}`);
+            const rows = tbody.querySelectorAll('.goods-row');
+            let totalSum = 0, paidSum = 0;
+            rows.forEach(row => { totalSum += parseFloat(row.querySelector('.goods-total').value) || 0; paidSum += parseFloat(row.querySelector('.goods-paid').value) || 0; });
+            const remainingSum = totalSum - paidSum;
+            document.getElementById(`newDebtTotalAmount_${debtId}`).textContent = totalSum.toFixed(2);
+            document.getElementById(`newDebtTotalPaid_${debtId}`).textContent = paidSum.toFixed(2);
+            document.getElementById(`newDebtTotalRemaining_${debtId}`).textContent = remainingSum.toFixed(2);
+            document.getElementById(`newDebtTotalRemaining_${debtId}`).style.color = remainingSum > 0 ? '#e74c3c' : '#27ae60';
+        }
+
+        function addNewDebtGoodsRow(debtId) {
+            const tbody = document.getElementById(`newDebtGoodsBody_${debtId}`);
+            const row = document.createElement('tr');
+            row.className = 'goods-row';
+            row.innerHTML = `
+                <td><input type="text" class="goods-name" placeholder="اسم البضاعة"></td>
+                <td><input type="number" class="goods-qty" placeholder="الكمية" min="1" oninput="calculateNewDebtGoodsRow(${debtId}, this)"></td>
+                <td><input type="number" class="goods-price" placeholder="سعر الفرد" step="0.01" min="0" oninput="calculateNewDebtGoodsRow(${debtId}, this)"></td>
+                <td><input type="text" class="goods-total" readonly style="background:#e8f0fe;font-weight:bold;color:#1a1a2e;text-align:center;"></td>
+                <td><input type="number" class="goods-paid" placeholder="المدفوع" step="0.01" min="0" oninput="calculateNewDebtGoodsRow(${debtId}, this)"></td>
+                <td><input type="text" class="goods-remaining" readonly style="background:#fdebd0;font-weight:bold;color:#1a1a2e;text-align:center;"></td>
+                <td><button type="button" class="btn-remove-row" onclick="removeNewDebtGoodsRow(${debtId}, this)">✖</button></td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function removeNewDebtGoodsRow(debtId, btn) {
+            const tbody = document.getElementById(`newDebtGoodsBody_${debtId}`);
+            const rows = tbody.querySelectorAll('.goods-row');
+            if (rows.length <= 1) { showToast('❌ يجب أن يكون هناك صف واحد على الأقل', 'error'); return; }
+            btn.closest('tr').remove();
+            calculateNewDebtGoodsTotal(debtId);
+        }
+
+        window.showNewDebtForm = function(debtId) {
+            const form = document.getElementById(`newDebtForm_${debtId}`);
+            if (form) {
+                form.classList.add('show');
+                document.getElementById(`newDebtOrigin_${debtId}`).value = '';
+                document.getElementById(`newDebtCashSection_${debtId}`).style.display = 'none';
+                document.getElementById(`newDebtGoodsSection_${debtId}`).style.display = 'none';
+                document.getElementById(`newDebtAmount_${debtId}`).required = false;
+                const tbody = document.getElementById(`newDebtGoodsBody_${debtId}`);
+                tbody.innerHTML = `<tr class="goods-row"><td><input type="text" class="goods-name" placeholder="اسم البضاعة"></td><td><input type="number" class="goods-qty" placeholder="الكمية" min="1" oninput="calculateNewDebtGoodsRow(${debtId}, this)"></td><td><input type="number" class="goods-price" placeholder="سعر الفرد" step="0.01" min="0" oninput="calculateNewDebtGoodsRow(${debtId}, this)"></td><td><input type="text" class="goods-total" readonly style="background:#e8f0fe;font-weight:bold;color:#1a1a2e;text-align:center;"></td><td><input type="number" class="goods-paid" placeholder="المدفوع" step="0.01" min="0" oninput="calculateNewDebtGoodsRow(${debtId}, this)"></td><td><input type="text" class="goods-remaining" readonly style="background:#fdebd0;font-weight:bold;color:#1a1a2e;text-align:center;"></td><td><button type="button" class="btn-remove-row" onclick="removeNewDebtGoodsRow(${debtId}, this)">✖</button></td></tr>`;
+                document.getElementById(`newDebtTotalAmount_${debtId}`).textContent = '0.00';
+                document.getElementById(`newDebtTotalPaid_${debtId}`).textContent = '0.00';
+                document.getElementById(`newDebtTotalRemaining_${debtId}`).textContent = '0.00';
+                document.getElementById(`newDebtOrigin_${debtId}`).focus();
+            }
+        };
+
+        window.hideNewDebtForm = function(debtId) {
+            const form = document.getElementById(`newDebtForm_${debtId}`);
+            if (form) { form.classList.remove('show'); }
+        };
+
+        window.addNewDebt = async function(debtId) {
+            const origin = document.getElementById(`newDebtOrigin_${debtId}`).value;
+            let amount = 0, paid = 0;
+            if (origin === 'cash') {
+                amount = parseFloat(document.getElementById(`newDebtAmount_${debtId}`).value);
+                if (!amount || amount <= 0) { showToast('❌ يرجى إدخال مبلغ صحيح', 'error'); return; }
+            } else if (origin === 'goods') {
+                const tbody = document.getElementById(`newDebtGoodsBody_${debtId}`);
+                const rows = tbody.querySelectorAll('.goods-row');
+                let totalAmount = 0, totalPaid = 0;
+                rows.forEach(row => {
+                    const name = row.querySelector('.goods-name').value.trim();
+                    const qty = parseFloat(row.querySelector('.goods-qty').value) || 0;
+                    const price = parseFloat(row.querySelector('.goods-price').value) || 0;
+                    const paid = parseFloat(row.querySelector('.goods-paid').value) || 0;
+                    if (name && qty > 0 && price > 0) { totalAmount += qty * price; totalPaid += paid; }
+                });
+                if (totalAmount <= 0) { showToast('❌ يرجى إضافة بضاعة صحيحة', 'error'); return; }
+                amount = totalAmount;
+                paid = totalPaid;
+            } else { showToast('❌ يرجى اختيار أصل الدين', 'error'); return; }
+            try {
+                const debts = await getAllData('debts');
+                const debt = debts.find(d => d.id === debtId);
+                if (!debt) { showToast('❌ العميل غير موجود', 'error'); return; }
+                const newTotal = debt.total_amount + amount;
+                const newPaid = debt.paid_amount + paid;
+                const newRemaining = newTotal - newPaid;
+                await updateData('debts', debtId, { ...debt, total_amount: newTotal, paid_amount: newPaid, remaining_amount: newRemaining });
+                await addData('payments', { debt_id: debtId, amount, payment_date: new Date().toISOString().split('T')[0], notes: '', is_new_debt: true });
+                showToast(`✅ تم إضافة دين جديد ${amount.toFixed(2)}`, 'success');
+                hideNewDebtForm(debtId);
+                loadDebts();
+            } catch (error) { console.error(error); showToast('❌ حدث خطأ', 'error'); }
+        };
+
+        // ===== حذف الدفعة =====
+        window.deletePayment = async function(paymentId, debtId, amount) {
+            if (!confirm(`هل أنت متأكد من حذف هذه المعاملة (${amount.toFixed(2)})؟`)) return;
+            try {
+                const debts = await getAllData('debts');
+                const debt = debts.find(d => d.id === debtId);
+                if (debt) {
+                    const payments = await getDataByIndex('payments', 'debt_id', debtId);
+                    const payment = payments.find(p => p.id === paymentId);
+                    if (payment && payment.is_new_debt) {
+                        await updateData('debts', debtId, { ...debt, total_amount: debt.total_amount - amount, remaining_amount: debt.remaining_amount - amount });
+                    } else {
+                        const newPaid = debt.paid_amount - amount;
+                        const newRemaining = debt.total_amount - newPaid;
+                        await updateData('debts', debtId, { ...debt, paid_amount: newPaid, remaining_amount: newRemaining });
+                    }
+                }
+                await deleteData('payments', paymentId);
+                showToast('✅ تم الحذف', 'success');
+                loadDebts();
+            } catch (error) { console.error(error); showToast('❌ حدث خطأ', 'error'); }
+        };
+
+        window.deleteDebt = async function(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا العميل وجميع معاملاته؟')) return;
+            try {
+                const payments = await getDataByIndex('payments', 'debt_id', id);
+                for (const payment of payments) { await deleteData('payments', payment.id); }
+                await deleteData('debts', id);
+                showToast('✅ تم الحذف', 'success');
+                loadDebts();
+            } catch (error) { console.error(error); showToast('❌ حدث خطأ', 'error'); }
+        };
+
+        // ===== المصروفات =====
+        function toggleExpenseForm() {
+            const container = document.getElementById('expenseFormContainer');
+            const btn = document.getElementById('toggleExpenseBtn');
+            if (container.style.display === 'none' || container.style.display === '') {
+                container.style.display = 'block';
+                btn.textContent = '✖ إغلاق';
+                btn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                btn.style.boxShadow = '0 2px 8px rgba(231, 76, 60, 0.3)';
+                document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+                setTimeout(() => { container.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+            } else {
+                container.style.display = 'none';
+                btn.textContent = '➕ إضافة مصروف';
+                btn.style.background = 'linear-gradient(135deg, #e67e22, #d35400)';
+                btn.style.boxShadow = '0 2px 8px rgba(230, 126, 34, 0.3)';
+                document.getElementById('expenseForm').reset();
+                document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+            }
+        }
+
+        document.getElementById('expenseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const date = document.getElementById('expenseDate').value;
+            const notes = document.getElementById('expenseNotes').value.trim();
+            if (!amount || amount <= 0) { showToast('❌ يرجى إدخال مبلغ صحيح', 'error'); return; }
+            if (!notes) { showToast('❌ يرجى إدخال ملاحظات', 'error'); return; }
+            try {
+                await addData('expenses', { amount, date: date || new Date().toISOString().split('T')[0], notes, created_at: new Date().toISOString().split('T')[0] });
+                showToast(`✅ تم إضافة مصروف ${amount.toFixed(2)}`, 'success');
+                document.getElementById('expenseForm').reset();
+                document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+                toggleExpenseForm();
+                loadExpenses();
+            } catch (error) { showToast('❌ حدث خطأ أثناء الإضافة', 'error'); }
+        });
+
+        async function loadExpenses() {
+            try {
+                const expenses = await getAllData('expenses');
+                const tbody = document.getElementById('expenseTableBody');
+                const tfoot = document.getElementById('expenseTableFooter');
+                const summary = document.getElementById('expenseSummary');
+                if (expenses.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:30px;color:#999;font-size:16px;"><div style="font-size:48px;margin-bottom:10px;">💸</div>لا توجد مصروفات<br><span style="font-size:13px;">اضغط على "إضافة مصروف" لإضافة مصروف جديد</span></td></tr>`;
+                    tfoot.style.display = 'none';
+                    return;
+                }
+                const sortedExpenses = [...expenses].sort((a, b) => b.id - a.id);
+                let totalAmount = 0;
+                tbody.innerHTML = sortedExpenses.map((e, index) => {
+                    totalAmount += e.amount;
+                    const rowColor = index % 2 === 0 ? '#f8f9fa' : 'white';
+                    return `<tr style="background:${rowColor};border-bottom:1px solid #ecf0f1;" onmouseover="this.style.background='#fdebd0'" onmouseout="this.style.background='${rowColor}'">
+                        <td style="padding:10px 8px;text-align:center;color:#e74c3c;font-weight:bold;">${e.amount.toFixed(2)}</td>
+                        <td style="padding:10px 8px;text-align:center;color:#7f8c8d;font-size:12px;">${e.date || e.created_at || '---'}</td>
+                        <td style="padding:10px 8px;text-align:center;color:#2c3e50;">${e.notes || '---'}</td>
+                        <td style="padding:10px 8px;text-align:center;"><button onclick="deleteExpense(${e.id})" style="background:#fadbd8;color:#e74c3c;border:none;border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;font-weight:bold;">🗑️ حذف</button></td>
+                    </tr>`;
+                }).join('');
+                tfoot.style.display = 'table-footer-group';
+                summary.innerHTML = `💸 إجمالي المصروفات: <strong style="color:#e74c3c;">${totalAmount.toFixed(2)}</strong> &nbsp;|&nbsp; 📊 عدد المصروفات: <strong style="color:#2980b9;">${expenses.length}</strong>`;
+            } catch (error) { console.error(error); }
+        }
+
+        window.deleteExpense = async function(id) {
+            if (confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
+                try {
+                    await deleteData('expenses', id);
+                    showToast('✅ تم الحذف', 'success');
+                    loadExpenses();
+                } catch (error) { showToast('❌ حدث خطأ', 'error'); }
+            }
+        };
+
+        // ===== المحاسبة =====
+        function calculateStockRow(input) {
+            const row = input.closest('tr');
+            const qty = parseFloat(row.querySelector('.stock-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.stock-price').value) || 0;
+            const cost = parseFloat(row.querySelector('.stock-cost').value) || 0;
+            const total = (qty * price) + cost;
+            row.querySelector('.stock-total').value = total.toFixed(2);
+            calculateStockTotal();
+        }
+
+        function calculateStockTotal() {
+            const totals = document.querySelectorAll('.stock-total');
+            let sum = 0;
+            totals.forEach(t => sum += parseFloat(t.value) || 0);
+            document.getElementById('existingStockTotal').textContent = sum.toFixed(2);
+            calculateProfitLoss();
+        }
+
+        function addStockRow() {
+            const tbody = document.getElementById('existingStockBody');
+            const row = document.createElement('tr');
+            row.className = 'stock-row';
+            row.innerHTML = `
+                <td><input type="text" class="stock-name" placeholder="اسم البضاعة"></td>
+                <td><input type="number" class="stock-qty" placeholder="الكمية" min="1" oninput="calculateStockRow(this)"></td>
+                <td><input type="number" class="stock-price" placeholder="ثمن الفرد" step="0.01" min="0" oninput="calculateStockRow(this)"></td>
+                <td><input type="number" class="stock-cost" placeholder="الحمل" step="0.01" min="0" oninput="calculateStockRow(this)"></td>
+                <td><input type="text" class="stock-total" readonly style="background:#e8f0fe;font-weight:bold;color:#1a1a2e;text-align:center;"></td>
+                <td><button type="button" class="btn-remove-row" onclick="removeStockRow(this)">✖</button></td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function removeStockRow(btn) {
+            const rows = document.querySelectorAll('.stock-row');
+            if (rows.length <= 1) { showToast('❌ يجب أن يكون هناك صف واحد على الأقل', 'error'); return; }
+            btn.closest('tr').remove();
+            calculateStockTotal();
+        }
+
+        async function calculateProfitLoss() {
+            try {
+                const products = await getAllData('products');
+                const debts = await getAllData('debts');
+                const expenses = await getAllData('expenses');
+                let totalProductsValue = 0, totalDebtsRemaining = 0, totalExpensesAmount = 0;
+                products.forEach(p => totalProductsValue += p.total || (p.quantity * p.price + (p.cost || 0)));
+                debts.forEach(d => totalDebtsRemaining += d.remaining_amount || 0);
+                expenses.forEach(e => totalExpensesAmount += e.amount || 0);
+                const stockTotals = document.querySelectorAll('.stock-total');
+                let existingStockValue = 0;
+                stockTotals.forEach(t => existingStockValue += parseFloat(t.value) || 0);
+                const existingCash = parseFloat(document.getElementById('existingCash').value) || 0;
+                const totalAssets = existingCash + totalDebtsRemaining + existingStockValue;
+                const totalLiabilities = totalProductsValue + totalExpensesAmount;
+                const profitLoss = totalAssets - totalLiabilities;
+                const isProfit = profitLoss >= 0;
+                document.getElementById('totalProductsValue').textContent = totalProductsValue.toFixed(2);
+                document.getElementById('totalDebtsRemaining').textContent = totalDebtsRemaining.toFixed(2);
+                document.getElementById('totalExpensesAmount').textContent = totalExpensesAmount.toFixed(2);
+                document.getElementById('totalAssets').textContent = totalAssets.toFixed(2);
+                document.getElementById('totalLiabilities').textContent = totalLiabilities.toFixed(2);
+                if (isProfit) {
+                    document.getElementById('profitResult').textContent = profitLoss.toFixed(2);
+                    document.getElementById('lossResult').textContent = '0.00';
+                } else {
+                    document.getElementById('profitResult').textContent = '0.00';
+                    document.getElementById('lossResult').textContent = Math.abs(profitLoss).toFixed(2);
+                }
+            } catch (error) { console.error(error); showToast('❌ حدث خطأ في حساب الربح/الخسارة', 'error'); }
+        }
+
+        async function loadTransactions() { await calculateProfitLoss(); }
+
+        document.getElementById('existingCash').addEventListener('input', calculateProfitLoss);
+
+        // ===== التبديل بين التبويبات =====
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById(this.dataset.tab).classList.add('active');
+                if (this.dataset.tab === 'products') loadProducts();
+                else if (this.dataset.tab === 'debts') loadDebts();
+                else if (this.dataset.tab === 'expenses') loadExpenses();
+                else if (this.dataset.tab === 'transactions') loadTransactions();
+            });
+        });
+
+        // ===== وضع الليل =====
+        let darkMode = false;
+        window.toggleDarkMode = function() {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark-mode', darkMode);
+            document.querySelector('.dark-toggle').textContent = darkMode ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', darkMode);
+        };
+
+        // ===== رسائل الإشعارات =====
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3000);
+        }
+
+        // ============================================
+        // =====  تثبيت التطبيق (PWA)  =====
+        // ============================================
+        let deferredInstallPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            if (localStorage.getItem('pwaBannerDismissed') !== 'true') {
+                document.getElementById('pwaInstallBanner').classList.add('show');
+            }
+        });
+
+        window.installPWA = async function() {
+            const banner = document.getElementById('pwaInstallBanner');
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                await deferredInstallPrompt.userChoice;
+                deferredInstallPrompt = null;
+            }
+            banner.classList.remove('show');
+        };
+
+        window.dismissPWABanner = function() {
+            document.getElementById('pwaInstallBanner').classList.remove('show');
+            localStorage.setItem('pwaBannerDismissed', 'true');
+        };
+
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('pwaInstallBanner').classList.remove('show');
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.error('SW registration failed:', err));
+            });
+        }
+
+        // ===== تهيئة التطبيق =====
+        async function init() {
+            try {
+                await openDB();
+                await loadProducts();
+                await loadDebts();
+                await loadExpenses();
+                await loadTransactions();
+                console.log('✅ التطبيق جاهز');
+                if (localStorage.getItem('darkMode') === 'true') { toggleDarkMode(); }
+            } catch (error) {
+                console.error('❌ خطأ في التهيئة:', error);
+                showToast('❌ فشل تحميل قاعدة البيانات', 'error');
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
