@@ -12,6 +12,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -765,6 +766,147 @@
             color: white;
         }
 
+        /* ===== شاشة تسجيل الدخول ===== */
+        #authScreen {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 0 10px;
+        }
+
+        #authScreen .auth-card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px 24px;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        #authScreen .auth-logo {
+            font-size: 50px;
+            margin-bottom: 5px;
+        }
+
+        #authScreen h2 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 22px;
+        }
+
+        #authScreen p.auth-sub {
+            color: #7f8c8d;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        #authScreen input {
+            width: 100%;
+            padding: 13px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a2e;
+            background: #fafafa;
+            text-align: right;
+        }
+
+        #authScreen input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            background: white;
+        }
+
+        #authScreen button.auth-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        #authScreen button.auth-submit:active { transform: scale(0.97); }
+
+        #authScreen .auth-switch {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        #authScreen .auth-switch a {
+            color: #3498db;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        #authScreen .auth-error {
+            background: #fadbd8;
+            color: #e74c3c;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        #authScreen .auth-loading {
+            display: none;
+            color: #7f8c8d;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .dark-mode #authScreen .auth-card {
+            background: #16213e;
+        }
+
+        .dark-mode #authScreen h2 { color: #eee; }
+
+        .dark-mode #authScreen input {
+            background: #1a1a2e;
+            color: #ecf0f1;
+            border-color: #444;
+        }
+
+        .top-user-bar {
+            max-width: 800px;
+            margin: 0 auto 10px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 10px;
+            padding: 8px 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            font-size: 13px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .dark-mode .top-user-bar {
+            background: #16213e;
+            color: #eee;
+        }
+
+        .top-user-bar button {
+            background: #fadbd8;
+            color: #e74c3c;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
         @media (max-width: 600px) {
             .tab-btn {
                 font-size: 12px;
@@ -806,7 +948,31 @@
 <body>
     <button class="dark-toggle" onclick="toggleDarkMode()">🌙</button>
 
-    <div id="app">
+    <!-- ====== شاشة تسجيل الدخول ====== -->
+    <div id="authScreen">
+        <div class="auth-card">
+            <div class="auth-logo">📦</div>
+            <h2 id="authTitle">تسجيل الدخول</h2>
+            <p class="auth-sub">التجارة - مفكرة الدكان الذكية</p>
+            <div class="auth-error" id="authError"></div>
+            <form id="authForm">
+                <input type="text" id="authUsername" placeholder="اسم المستخدم" required autocomplete="username" minlength="3">
+                <input type="password" id="authPassword" placeholder="كلمة المرور" required autocomplete="current-password" minlength="6">
+                <button type="submit" class="auth-submit" id="authSubmitBtn">دخول</button>
+            </form>
+            <div class="auth-switch" id="authSwitch">
+                ليس لديك حساب؟ <a onclick="toggleAuthMode()">إنشاء حساب جديد</a>
+            </div>
+            <div class="auth-loading" id="authLoading">⏳ جاري التحقق...</div>
+        </div>
+    </div>
+
+    <!-- ====== التطبيق (يظهر بعد تسجيل الدخول) ====== -->
+    <div id="app" style="display:none;">
+        <div class="top-user-bar">
+            <span id="currentUserLabel">👤 </span>
+            <button onclick="logoutUser()">🚪 تسجيل خروج</button>
+        </div>
         <header>
             <h1>📦 التجارة</h1>
             <p>مفكرة الدكان الذكية</p>
@@ -1146,93 +1312,148 @@
 
     <script>
         // ============================================
-        // =====  قاعدة بيانات IndexedDB  =====
+        // =====  الاتصال بـ Supabase  =====
         // ============================================
-        const DB_NAME = 'TijaraDB';
-        const DB_VERSION = 3;
-        let db = null;
+        const SUPABASE_URL = 'https://ysmlsgthnacdbgzfbecf.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_8bNtx1T41-A3wvsXsMlonA_O2uVHTew';
+        const FAKE_EMAIL_DOMAIN = '@tijara.local';
 
-        function openDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, DB_VERSION);
-                request.onupgradeneeded = (event) => {
-                    const db = event.target.result;
-                    if (!db.objectStoreNames.contains('products')) {
-                        db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentUser = null;
+
+        // ===== دوال قاعدة البيانات (تعمل بدلاً من IndexedDB) =====
+        async function addData(tableName, data) {
+            const payload = { ...data, user_id: currentUser.id };
+            const { data: inserted, error } = await sb.from(tableName).insert(payload).select().single();
+            if (error) throw error;
+            return inserted.id;
+        }
+
+        async function getAllData(tableName) {
+            const { data, error } = await sb.from(tableName).select('*');
+            if (error) throw error;
+            return data || [];
+        }
+
+        async function deleteData(tableName, id) {
+            const { error } = await sb.from(tableName).delete().eq('id', id);
+            if (error) throw error;
+        }
+
+        async function updateData(tableName, id, data) {
+            const { id: _omit, ...rest } = data;
+            const { error } = await sb.from(tableName).update(rest).eq('id', id);
+            if (error) throw error;
+        }
+
+        async function getDataByIndex(tableName, columnName, value) {
+            const { data, error } = await sb.from(tableName).select('*').eq(columnName, value);
+            if (error) throw error;
+            return data || [];
+        }
+
+        // ============================================
+        // =====  المصادقة (تسجيل الدخول / حساب جديد)  =====
+        // ============================================
+        let authMode = 'login'; // 'login' or 'signup'
+
+        function toggleAuthMode() {
+            authMode = authMode === 'login' ? 'signup' : 'login';
+            const title = document.getElementById('authTitle');
+            const btn = document.getElementById('authSubmitBtn');
+            const switchEl = document.getElementById('authSwitch');
+            document.getElementById('authError').style.display = 'none';
+            if (authMode === 'signup') {
+                title.textContent = 'إنشاء حساب جديد';
+                btn.textContent = 'إنشاء الحساب';
+                switchEl.innerHTML = 'لديك حساب بالفعل؟ <a onclick="toggleAuthMode()">تسجيل الدخول</a>';
+            } else {
+                title.textContent = 'تسجيل الدخول';
+                btn.textContent = 'دخول';
+                switchEl.innerHTML = 'ليس لديك حساب؟ <a onclick="toggleAuthMode()">إنشاء حساب جديد</a>';
+            }
+        }
+        window.toggleAuthMode = toggleAuthMode;
+
+        function showAuthError(message) {
+            const errEl = document.getElementById('authError');
+            errEl.textContent = message;
+            errEl.style.display = 'block';
+        }
+
+        function usernameToEmail(username) {
+            return username.trim().toLowerCase().replace(/[^a-z0-9_]/g, '') + FAKE_EMAIL_DOMAIN;
+        }
+
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('authUsername').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const errEl = document.getElementById('authError');
+            const loadingEl = document.getElementById('authLoading');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            errEl.style.display = 'none';
+
+            if (username.length < 3) { showAuthError('❌ اسم المستخدم يجب أن يكون 3 أحرف على الأقل'); return; }
+            if (password.length < 6) { showAuthError('❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل'); return; }
+
+            const email = usernameToEmail(username);
+            loadingEl.style.display = 'block';
+            submitBtn.disabled = true;
+
+            try {
+                if (authMode === 'signup') {
+                    const { data, error } = await sb.auth.signUp({ email, password });
+                    if (error) {
+                        if (error.message.includes('already registered') || error.message.includes('already exists')) {
+                            showAuthError('❌ اسم المستخدم هذا مستخدم بالفعل، جرب اسم آخر');
+                        } else {
+                            showAuthError('❌ ' + error.message);
+                        }
+                        return;
                     }
-                    if (!db.objectStoreNames.contains('debts')) {
-                        db.createObjectStore('debts', { keyPath: 'id', autoIncrement: true });
+                    if (data.user) {
+                        currentUser = data.user;
+                        currentUser.displayName = username;
+                        localStorage.setItem('tijara_username', username);
+                        onLoginSuccess();
                     }
-                    if (!db.objectStoreNames.contains('payments')) {
-                        db.createObjectStore('payments', { keyPath: 'id', autoIncrement: true });
+                } else {
+                    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+                    if (error) {
+                        showAuthError('❌ اسم المستخدم أو كلمة المرور غير صحيحة');
+                        return;
                     }
-                    if (!db.objectStoreNames.contains('expenses')) {
-                        db.createObjectStore('expenses', { keyPath: 'id', autoIncrement: true });
-                    }
-                    if (!db.objectStoreNames.contains('transactions')) {
-                        db.createObjectStore('transactions', { keyPath: 'id', autoIncrement: true });
-                    }
-                };
-                request.onsuccess = (event) => {
-                    db = event.target.result;
-                    resolve(db);
-                };
-                request.onerror = (event) => {
-                    reject(event.target.error);
-                };
-            });
+                    currentUser = data.user;
+                    currentUser.displayName = username;
+                    localStorage.setItem('tijara_username', username);
+                    onLoginSuccess();
+                }
+            } catch (err) {
+                showAuthError('❌ حدث خطأ، تأكد من اتصال الإنترنت');
+                console.error(err);
+            } finally {
+                loadingEl.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+
+        function onLoginSuccess() {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('currentUserLabel').textContent = '👤 ' + (currentUser.displayName || 'المستخدم');
+            document.getElementById('authForm').reset();
+            initAppData();
         }
 
-        function addData(storeName, data) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(storeName, 'readwrite');
-                const store = transaction.objectStore(storeName);
-                const request = store.add(data);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
-        }
-
-        function getAllData(storeName) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(storeName, 'readonly');
-                const store = transaction.objectStore(storeName);
-                const request = store.getAll();
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
-        }
-
-        function deleteData(storeName, id) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(storeName, 'readwrite');
-                const store = transaction.objectStore(storeName);
-                const request = store.delete(id);
-                request.onsuccess = () => resolve();
-                request.onerror = () => reject(request.error);
-            });
-        }
-
-        function updateData(storeName, id, data) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(storeName, 'readwrite');
-                const store = transaction.objectStore(storeName);
-                const request = store.put({ ...data, id });
-                request.onsuccess = () => resolve();
-                request.onerror = () => reject(request.error);
-            });
-        }
-
-        function getDataByIndex(storeName, indexName, value) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(storeName, 'readonly');
-                const store = transaction.objectStore(storeName);
-                const index = store.index(indexName);
-                const request = index.getAll(value);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
-        }
+        window.logoutUser = async function() {
+            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+            await sb.auth.signOut();
+            currentUser = null;
+            localStorage.removeItem('tijara_username');
+            document.getElementById('app').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'block';
+        };
 
         // ===== البضاعة =====
         function toggleProductForm() {
@@ -1912,91 +2133,4 @@
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                document.getElementById(this.dataset.tab).classList.add('active');
-                if (this.dataset.tab === 'products') loadProducts();
-                else if (this.dataset.tab === 'debts') loadDebts();
-                else if (this.dataset.tab === 'expenses') loadExpenses();
-                else if (this.dataset.tab === 'transactions') loadTransactions();
-            });
-        });
-
-        // ===== وضع الليل =====
-        let darkMode = false;
-        window.toggleDarkMode = function() {
-            darkMode = !darkMode;
-            document.body.classList.toggle('dark-mode', darkMode);
-            document.querySelector('.dark-toggle').textContent = darkMode ? '☀️' : '🌙';
-            localStorage.setItem('darkMode', darkMode);
-        };
-
-        // ===== رسائل الإشعارات =====
-        function showToast(message, type = 'info') {
-            const existing = document.querySelector('.toast');
-            if (existing) existing.remove();
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 3000);
-        }
-
-        // ============================================
-        // =====  تثبيت التطبيق (PWA)  =====
-        // ============================================
-        let deferredInstallPrompt = null;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredInstallPrompt = e;
-            if (localStorage.getItem('pwaBannerDismissed') !== 'true') {
-                document.getElementById('pwaInstallBanner').classList.add('show');
-            }
-        });
-
-        window.installPWA = async function() {
-            const banner = document.getElementById('pwaInstallBanner');
-            if (deferredInstallPrompt) {
-                deferredInstallPrompt.prompt();
-                await deferredInstallPrompt.userChoice;
-                deferredInstallPrompt = null;
-            }
-            banner.classList.remove('show');
-        };
-
-        window.dismissPWABanner = function() {
-            document.getElementById('pwaInstallBanner').classList.remove('show');
-            localStorage.setItem('pwaBannerDismissed', 'true');
-        };
-
-        window.addEventListener('appinstalled', () => {
-            document.getElementById('pwaInstallBanner').classList.remove('show');
-        });
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.error('SW registration failed:', err));
-            });
-        }
-
-        // ===== تهيئة التطبيق =====
-        async function init() {
-            try {
-                await openDB();
-                await loadProducts();
-                await loadDebts();
-                await loadExpenses();
-                await loadTransactions();
-                console.log('✅ التطبيق جاهز');
-                if (localStorage.getItem('darkMode') === 'true') { toggleDarkMode(); }
-            } catch (error) {
-                console.error('❌ خطأ في التهيئة:', error);
-                showToast('❌ فشل تحميل قاعدة البيانات', 'error');
-            }
-        }
-
-        init();
-    </script>
-</body>
-</html>
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.r
