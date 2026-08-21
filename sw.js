@@ -1,9 +1,9 @@
-const CACHE_NAME = 'tijara-cache-v1';
-const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
+const CACHE_NAME = 'tijara-cache-v2';
+const STATIC_ASSETS = ['./manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
   );
   self.skipWaiting();
 });
@@ -18,15 +18,32 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  const isHTML = req.mode === 'navigate' || req.destination === 'document' || req.url.endsWith('/') || req.url.includes('index.html');
+
+  if (isHTML) {
+    // الصفحة الرئيسية: دائمًا نحاول الإنترنت أول عشان يوصل آخر تحديث فورًا
+    event.respondWith(
+      fetch(req).then((response) => {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
+        return response;
+      }).catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // باقي الملفات الثابتة (أيقونات، manifest): كاش أول للسرعة، وتحديث بالخلفية
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request).then((response) => {
-        if (event.request.method === 'GET' && response.ok) {
+    caches.match(req).then((cached) => {
+      const fetchPromise = fetch(req).then((response) => {
+        if (req.method === 'GET' && response.ok) {
           const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
         }
         return response;
       }).catch(() => cached);
+      return cached || fetchPromise;
     })
   );
 });
