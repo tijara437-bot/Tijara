@@ -591,7 +591,7 @@
 
         .summary-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
             gap: 10px;
         }
 
@@ -1199,24 +1199,6 @@
 
         <!-- ====== تبويب المحاسبة ====== -->
         <div id="transactions" class="tab-content">
-            <div class="card summary-card">
-                <h3>📊 العناصر الجاهزة</h3>
-                <div class="summary-grid">
-                    <div class="summary-item" style="background: #ebf5fb; color: #2980b9;">
-                        <span>📦 قيمة البضاعة المسجلة</span>
-                        <strong id="totalProductsValue">0.00</strong>
-                    </div>
-                    <div class="summary-item" style="background: #fdebd0; color: #e67e22;">
-                        <span>💰 قيمة الديون غير المسددة</span>
-                        <strong id="totalDebtsRemaining">0.00</strong>
-                    </div>
-                    <div class="summary-item" style="background: #fadbd8; color: #e74c3c;">
-                        <span>💸 قيمة المصروفات</span>
-                        <strong id="totalExpensesAmount">0.00</strong>
-                    </div>
-                </div>
-            </div>
-
             <div class="card">
                 <h3>📦 البضاعة الموجودة</h3>
                 <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
@@ -1260,6 +1242,32 @@
             <div class="card">
                 <h3>💰 النقد الموجود</h3>
                 <input type="number" id="existingCash" placeholder="النقد الموجود" step="0.01" min="0" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; font-size:16px; font-weight:700; color:#1a1a2e; background:#fef9e7;" oninput="calculateProfitLoss()">
+            </div>
+
+            <div class="card summary-card">
+                <h3>📊 العناصر الجاهزة</h3>
+                <div class="summary-grid">
+                    <div class="summary-item" style="background: #ebf5fb; color: #2980b9;">
+                        <span>📦 قيمة البضاعة المسجلة</span>
+                        <strong id="totalProductsValue">0.00</strong>
+                    </div>
+                    <div class="summary-item" style="background: #eafaf1; color: #16a085;">
+                        <span>📦 قيمة البضاعة الموجودة</span>
+                        <strong id="summaryExistingStock">0.00</strong>
+                    </div>
+                    <div class="summary-item" style="background: #fdebd0; color: #e67e22;">
+                        <span>💰 قيمة الديون غير المسددة</span>
+                        <strong id="totalDebtsRemaining">0.00</strong>
+                    </div>
+                    <div class="summary-item" style="background: #fadbd8; color: #e74c3c;">
+                        <span>💸 قيمة المصروفات</span>
+                        <strong id="totalExpensesAmount">0.00</strong>
+                    </div>
+                    <div class="summary-item" style="background: #fef9e7; color: #b7950b;">
+                        <span>💵 النقد الموجود</span>
+                        <strong id="summaryExistingCash">0.00</strong>
+                    </div>
+                </div>
             </div>
 
             <div class="card">
@@ -2142,6 +2150,8 @@
                 document.getElementById('totalProductsValue').textContent = totalProductsValue.toFixed(2);
                 document.getElementById('totalDebtsRemaining').textContent = totalDebtsRemaining.toFixed(2);
                 document.getElementById('totalExpensesAmount').textContent = totalExpensesAmount.toFixed(2);
+                document.getElementById('summaryExistingStock').textContent = existingStockValue.toFixed(2);
+                document.getElementById('summaryExistingCash').textContent = existingCash.toFixed(2);
                 document.getElementById('totalAssets').textContent = totalAssets.toFixed(2);
                 document.getElementById('totalLiabilities').textContent = totalLiabilities.toFixed(2);
                 if (isProfit) {
