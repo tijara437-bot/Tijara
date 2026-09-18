@@ -326,9 +326,14 @@
 
                 // التحقق من صلاحية الأدمن
                 const { data: profile, error: profErr } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
-                if (profErr || !profile || profile.role !== 'admin') {
+                if (profErr) {
                     await sb.auth.signOut();
-                    showAuthError('❌ هذا الحساب ليس لديه صلاحية الإدارة');
+                    showAuthError('❌ خطأ بجلب الصلاحية: ' + (profErr.message || JSON.stringify(profErr)) + ' | code: ' + (profErr.code || '-'));
+                    return;
+                }
+                if (!profile || profile.role !== 'admin') {
+                    await sb.auth.signOut();
+                    showAuthError('❌ الدور المسجل هو: "' + (profile ? profile.role : 'لا يوجد ملف شخصي') + '" وليس admin');
                     return;
                 }
 
