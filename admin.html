@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>لوحة تحكم الإدارة - التجارة</title>
+    <meta name="theme-color" content="#1a1a2e">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body {
+            background: #1a1a2e;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        #app { max-width: 800px; margin: 0 auto; padding-bottom: 60px; }
+
+        /* ===== شاشة تسجيل دخول الأدمن ===== */
+        #authScreen {
+            min-height: calc(100vh - 20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 10px;
+        }
+
+        #authScreen .auth-box {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        #authScreen .auth-logo { font-size: 60px; margin-bottom: 10px; }
+
+        #authScreen h2 { color: #ecf0f1; margin-bottom: 6px; font-size: 24px; }
+
+        #authScreen p.auth-sub { color: #8899a6; font-size: 14px; margin-bottom: 26px; }
+
+        #authScreen input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 14px;
+            border: 1px solid #33415c;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ecf0f1;
+            background: #16213e;
+            text-align: right;
+        }
+
+        #authScreen input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        #authScreen button.auth-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #8e44ad, #6c3483);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .auth-error {
+            background: #4a1c1c;
+            color: #ff8080;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 14px;
+            display: none;
+        }
+
+        .auth-loading { display: none; color: #8899a6; font-size: 13px; margin-top: 10px; }
+
+        /* ===== لوحة التحكم ===== */
+        header {
+            background: linear-gradient(135deg, #6c3483, #8e44ad);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 { font-size: 22px; }
+
+        header button {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .card {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+
+        .card h3 {
+            color: #ecf0f1;
+            margin-bottom: 15px;
+            font-size: 17px;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .stat-item {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-item span { font-size: 13px; color: #8899a6; display: block; font-weight: 700; }
+        .stat-item strong { font-size: 22px; display: block; margin-top: 6px; color: #ecf0f1; }
+
+        textarea, input[type=text].announce-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #33415c;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #ecf0f1;
+            background: #1a1a2e;
+            margin-bottom: 10px;
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #8e44ad, #6c3483); color: white; }
+        .btn-danger { background: #4a1c1c; color: #ff8080; }
+        .btn-warn { background: #4a3c1c; color: #ffcf80; }
+        .btn-success { background: #1c4a2c; color: #7dffab; }
+
+        .user-card {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-right: 4px solid #3498db;
+        }
+
+        .user-card.is-banned { border-right-color: #e74c3c; opacity: 0.7; }
+        .user-card.is-admin-user { border-right-color: #f1c40f; }
+
+        .user-card .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .user-card .user-name { font-size: 17px; font-weight: bold; color: #ecf0f1; }
+        .user-card .user-date { font-size: 12px; color: #8899a6; }
+
+        .mini-stats {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .mini-stats span {
+            background: #16213e;
+            padding: 5px 10px;
+            border-radius: 6px;
+            color: #ecf0f1;
+        }
+
+        .user-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 999;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast-success { background: #27ae60; }
+        .toast-error { background: #e74c3c; }
+
+        .empty-note { text-align: center; padding: 30px; color: #8899a6; }
+    </style>
+</head>
+<body>
+
+    <!-- ====== شاشة تسجيل دخول الأدمن ====== -->
+    <div id="authScreen">
+        <div class="auth-box">
+            <div class="auth-logo">🛡️</div>
+            <h2>لوحة تحكم الإدارة</h2>
+            <p class="auth-sub">التجارة - دخول خاص بالمشرفين فقط</p>
+            <div class="auth-error" id="authError"></div>
+            <form id="authForm">
+                <input type="text" id="authUsername" placeholder="اسم المستخدم" required minlength="3">
+                <input type="password" id="authPassword" placeholder="كلمة المرور" required minlength="6">
+                <button type="submit" class="auth-submit" id="authSubmitBtn">دخول</button>
+            </form>
+            <div class="auth-loading" id="authLoading">⏳ جاري التحقق...</div>
+        </div>
+    </div>
+
+    <!-- ====== لوحة التحكم ====== -->
+    <div id="app" style="display:none;">
+        <header>
+            <h1>🛡️ لوحة تحكم الإدارة</h1>
+            <button onclick="logoutAdmin()">🚪 خروج</button>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-item"><span>👥 إجمالي المستخدمين</span><strong id="statTotalUsers">0</strong></div>
+            <div class="stat-item"><span>🚫 المحظورين</span><strong id="statBanned">0</strong></div>
+            <div class="stat-item"><span>📦 إجمالي قيمة البضاعة</span><strong id="statProducts">0.00</strong></div>
+            <div class="stat-item"><span>💰 إجمالي الديون</span><strong id="statDebts">0.00</strong></div>
+        </div>
+
+        <div class="card">
+            <h3>📢 إرسال إعلان لكل المستخدمين</h3>
+            <textarea id="announceText" placeholder="اكتب رسالة الإعلان هنا..."></textarea>
+            <button class="btn btn-primary" onclick="sendAnnouncement()" style="width:100%;">إرسال الإعلان</button>
+        </div>
+
+        <div class="card">
+            <h3>👥 قائمة المستخدمين</h3>
+            <div id="usersList"><div class="empty-note">جاري التحميل...</div></div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://ysmlsgthnacdbgzfbecf.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_8bNtx1T41-A3wvsXsMlonA_O2uVHTew';
+        const FAKE_EMAIL_DOMAIN = '@tijara.local';
+
+        let sb = null;
+        let currentAdmin = null;
+
+        try {
+            if (typeof window.supabase === 'undefined') throw new Error('مكتبة الاتصال لم تُحمّل');
+            sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {
+            showAuthError('⚠️ فشل الاتصال بالخادم: ' + e.message);
+        }
+
+        function showAuthError(msg) {
+            const el = document.getElementById('authError');
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function usernameToEmail(username) {
+            return username.trim().toLowerCase().replace(/[^a-z0-9_]/g, '') + FAKE_EMAIL_DOMAIN;
+        }
+
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('authUsername').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const errEl = document.getElementById('authError');
+            const loadingEl = document.getElementById('authLoading');
+            const btn = document.getElementById('authSubmitBtn');
+            errEl.style.display = 'none';
+
+            if (!sb) { showAuthError('⚠️ لا يوجد اتصال بالخادم'); return; }
+
+            loadingEl.style.display = 'block';
+            btn.disabled = true;
+            try {
+                const email = usernameToEmail(username);
+                const { data, error } = await sb.auth.signInWithPassword({ email, password });
+                if (error) { showAuthError('❌ اسم المستخدم أو كلمة المرور غير صحيحة'); return; }
+
+                // التحقق من صلاحية الأدمن
+                const { data: profile, error: profErr } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
+                if (profErr || !profile || profile.role !== 'admin') {
+                    await sb.auth.signOut();
+                    showAuthError('❌ هذا الحساب ليس لديه صلاحية الإدارة');
+                    return;
+                }
+
+                currentAdmin = data.user;
+                onAdminLoginSuccess();
+            } catch (err) {
+                showAuthError('❌ حدث خطأ، تأكد من اتصال الإنترنت');
+                console.error(err);
+            } finally {
+                loadingEl.style.display = 'none';
+                btn.disabled = false;
+            }
+        });
+
+        function onAdminLoginSuccess() {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            loadDashboard();
+        }
+
+        window.logoutAdmin = async function() {
+            if (!confirm('تسجيل الخروج من لوحة التحكم؟')) return;
+            await sb.auth.signOut();
+            currentAdmin = null;
+            document.getElementById('app').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+            document.getElementById('authForm').reset();
+        };
+
+        // ============================================
+        // تحميل لوحة التحكم
+        // ============================================
+        async function loadDashboard() {
+            try {
+                const { data: profiles, error } = await sb.from('profiles').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+
+                let totalProducts = 0, totalDebts = 0, bannedCount = 0;
+                const usersData = [];
+
+                for (const p of profiles) {
+                    const [prodRes, debtsRes, expRes] = await Promise.all([
+                        sb.from('products').select('total').eq('user_id', p.id),
+                        sb.from('debts').select('remaining_amount').eq('user_id', p.id),
+                        sb.from('expenses').select('amount').eq('user_id', p.id)
+                    ]);
+                    const prodTotal = (prodRes.data || []).reduce((s, r) => s + (parseFloat(r.total) || 0), 0);
+                    const debtsTotal = (debtsRes.data || []).reduce((s, r) => s + (parseFloat(r.remaining_amount) || 0), 0);
+                    const expTotal = (expRes.data || []).reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+                    totalProducts += prodTotal;
+                    totalDebts += debtsTotal;
+                    if (p.banned) bannedCount++;
+                    usersData.push({ profile: p, prodTotal, debtsTotal, expTotal });
+                }
+
+                document.getElementById('statTotalUsers').textContent = profiles.length;
+                document.getElementById('statBanned').textContent = bannedCount;
+                document.getElementById('statProducts').textContent = totalProducts.toFixed(2);
+                document.getElementById('statDebts').textContent = totalDebts.toFixed(2);
+
+                renderUsers(usersData);
+            } catch (error) {
+                console.error(error);
+                showToast('❌ فشل تحميل البيانات', 'error');
+            }
+        }
+
+        function renderUsers(usersData) {
+            const container = document.getElementById('usersList');
+            if (!usersData.length) {
+                container.innerHTML = '<div class="empty-note">لا يوجد مستخدمون بعد</div>';
+                return;
+            }
+            container.innerHTML = usersData.map(({ profile: p, prodTotal, debtsTotal, expTotal }) => {
+                const joinDate = p.created_at ? p.created_at.split('T')[0] : '---';
+                const cardClass = p.banned ? 'is-banned' : (p.role === 'admin' ? 'is-admin-user' : '');
+                return `<div class="user-card ${cardClass}">
+                    <div class="user-header">
+                        <span class="user-name">👤 ${p.username} ${p.role === 'admin' ? '⭐ أدمن' : ''} ${p.banned ? '🚫 محظور' : ''}</span>
+                        <span class="user-date">📅 ${joinDate}</span>
+                    </div>
+                    <div class="mini-stats">
+                        <span>📦 بضاعة: ${prodTotal.toFixed(2)}</span>
+                        <span>💰 ديون: ${debtsTotal.toFixed(2)}</span>
+                        <span>💸 مصروفات: ${expTotal.toFixed(2)}</span>
+                    </div>
+                    <div class="user-actions">
+                        ${p.role !== 'admin' ? `
+                            <button class="btn ${p.banned ? 'btn-success' : 'btn-warn'}" onclick="toggleBan('${p.id}', ${!p.banned})">
+                                ${p.banned ? '✅ إلغاء الحظر' : '🚫 حظر'}
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteUserData('${p.id}', '${p.username}')">🗑️ حذف بياناته وحظره نهائيًا</button>
+                        ` : `<span style="color:#f1c40f; font-size:13px;">حساب مشرف - لا يمكن التعديل عليه</span>`}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        window.toggleBan = async function(userId, banned) {
+            const action = banned ? 'حظر' : 'إلغاء حظر';
+            if (!confirm(`هل أنت متأكد من ${action} هذا المستخدم؟`)) return;
+            try {
+                const { error } = await sb.from('profiles').update({ banned }).eq('id', userId);
+                if (error) throw error;
+                showToast(`✅ تم ${action} المستخدم`, 'success');
+                loadDashboard();
+            } catch (error) {
+                console.error(error);
+                showToast('❌ حدث خطأ', 'error');
+            }
+        };
+
+        window.deleteUserData = async function(userId, username) {
+            if (!confirm(`⚠️ سيتم حذف كل بيانات "${username}" (بضاعة، ديون، مصروفات) وحظره نهائيًا من الدخول. هل أنت متأكد؟ لا يمكن التراجع.`)) return;
+            try {
+                await Promise.all([
+                    sb.from('products').delete().eq('user_id', userId),
+                    sb.from('payments').delete().eq('user_id', userId),
+                    sb.from('debts').delete().eq('user_id', userId),
+                    sb.from('expenses').delete().eq('user_id', userId)
+                ]);
+                await sb.from('profiles').update({ banned: true }).eq('id', userId);
+                showToast(`✅ تم حذف بيانات "${username}" وحظره`, 'success');
+                loadDashboard();
+            } catch (error) {
+                console.error(error);
+                showToast('❌ حدث خطأ أثناء الحذف', 'error');
+            }
+        };
+
+        window.sendAnnouncement = async function() {
+            const text = document.getElementById('announceText').value.trim();
+            if (!text) { showToast('❌ اكتب نص الإعلان أولاً', 'error'); return; }
+            if (!confirm('سيظهر هذا الإعلان لكل المستخدمين عند فتح التطبيق. إرسال؟')) return;
+            try {
+                const { error } = await sb.from('announcements').insert({ message: text });
+                if (error) throw error;
+                showToast('✅ تم إرسال الإعلان لكل المستخدمين', 'success');
+                document.getElementById('announceText').value = '';
+            } catch (error) {
+                console.error(error);
+                showToast('❌ فشل إرسال الإعلان', 'error');
+            }
+        };
+
+        // التحقق من جلسة سابقة عند فتح الصفحة
+        (async function init() {
+            if (!sb) return;
+            try {
+                const { data: { session } } = await sb.auth.getSession();
+                if (session && session.user) {
+                    const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+                    if (profile && profile.role === 'admin') {
+                        currentAdmin = session.user;
+                        onAdminLoginSuccess();
+                    } else {
+                        await sb.auth.signOut();
+                    }
+                }
+            } catch (e) { console.error(e); }
+        })();
+    </script>
+</body>
+</html>
