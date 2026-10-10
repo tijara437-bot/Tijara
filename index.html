@@ -962,6 +962,17 @@
             <div class="auth-switch" id="authSwitch">
                 ليس لديك حساب؟ <a onclick="toggleAuthMode()">إنشاء حساب جديد</a>
             </div>
+            <div class="auth-switch" style="margin-top:8px;">
+                <a onclick="toggleForgotPassword()">نسيت كلمة المرور؟</a>
+            </div>
+            <div id="forgotPasswordPanel" style="display:none; margin-top:16px; padding:16px; background:rgba(52,152,219,0.08); border-radius:12px; text-align:right;">
+                <p style="font-size:14px; color:inherit; margin-bottom:10px; line-height:1.6;">
+                    تواصل معنا عبر البريد الإلكتروني وسنساعدك باستعادة حسابك:
+                </p>
+                <a href="mailto:tijara437@gmail.com?subject=نسيت%20كلمة%20المرور&body=مرحبًا،%20نسيت%20كلمة%20مرور%20حسابي%20باسم%20المستخدم:%20" style="display:block; text-align:center; background:#3498db; color:white; padding:12px; border-radius:8px; font-weight:bold; text-decoration:none; font-size:15px;">
+                    ✉️ tijara437@gmail.com
+                </a>
+            </div>
             <div class="auth-loading" id="authLoading">⏳ جاري التحقق...</div>
         </div>
     </div>
@@ -970,7 +981,10 @@
     <div id="app" style="display:none;">
         <div class="top-user-bar">
             <span id="currentUserLabel">👤 </span>
-            <button onclick="logoutUser()">🚪 تسجيل خروج</button>
+            <div style="display:flex; gap:6px;">
+                <button onclick="changeMyPassword()" style="background:#ebf5fb; color:#2980b9;">🔑 تغيير كلمة المرور</button>
+                <button onclick="logoutUser()">🚪 تسجيل خروج</button>
+            </div>
         </div>
         <header>
             <h1>📦 التجارة</h1>
@@ -1411,6 +1425,11 @@
         }
         window.toggleAuthMode = toggleAuthMode;
 
+        window.toggleForgotPassword = function() {
+            const panel = document.getElementById('forgotPasswordPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        };
+
         function showAuthError(message) {
             const errEl = document.getElementById('authError');
             errEl.textContent = message;
@@ -1475,13 +1494,61 @@
             }
         });
 
-        function onLoginSuccess() {
+        async function onLoginSuccess() {
+            try {
+                const { data: profile } = await sb.from('profiles').select('banned').eq('id', currentUser.id).single();
+                if (profile && profile.banned) {
+                    await sb.auth.signOut();
+                    currentUser = null;
+                    showAuthError('🚫 تم حظر هذا الحساب من قبل الإدارة');
+                    return;
+                }
+            } catch (e) { console.error('تعذر التحقق من حالة الحظر:', e); }
+
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
             document.getElementById('currentUserLabel').textContent = '👤 ' + (currentUser.displayName || 'المستخدم');
             document.getElementById('authForm').reset();
             initAppData();
+            checkAnnouncement();
         }
+
+        async function checkAnnouncement() {
+            try {
+                const { data, error } = await sb.from('announcements').select('*').order('created_at', { ascending: false }).limit(1).single();
+                if (error || !data) return;
+                const lastSeen = localStorage.getItem('tijara_last_announcement');
+                if (String(data.id) === lastSeen) return;
+                const banner = document.createElement('div');
+                banner.id = 'announcementBanner';
+                banner.style.cssText = 'position:fixed; top:0; right:0; left:0; z-index:1000; background:linear-gradient(135deg,#8e44ad,#6c3483); color:white; padding:14px 16px; text-align:center; font-weight:bold; font-size:15px; box-shadow:0 3px 12px rgba(0,0,0,0.2);';
+                banner.innerHTML = `<span>📢 ${data.message}</span> <button onclick="dismissAnnouncement(${data.id})" style="margin-right:12px; background:rgba(255,255,255,0.2); border:none; color:white; padding:5px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">إغلاق</button>`;
+                document.body.prepend(banner);
+            } catch (e) { console.error(e); }
+        }
+
+        window.dismissAnnouncement = function(id) {
+            localStorage.setItem('tijara_last_announcement', String(id));
+            const banner = document.getElementById('announcementBanner');
+            if (banner) banner.remove();
+        };
+
+        window.changeMyPassword = async function() {
+            const newPassword = prompt('أدخل كلمة المرور الجديدة (6 أحرف على الأقل):');
+            if (newPassword === null) return; // ألغى
+            if (newPassword.length < 6) { showToast('❌ كلمة المرور قصيرة جدًا (6 أحرف على الأقل)', 'error'); return; }
+            const confirmPassword = prompt('أعد كتابة كلمة المرور الجديدة للتأكيد:');
+            if (confirmPassword === null) return;
+            if (newPassword !== confirmPassword) { showToast('❌ كلمتا المرور غير متطابقتين', 'error'); return; }
+            try {
+                const { error } = await sb.auth.updateUser({ password: newPassword });
+                if (error) throw error;
+                showToast('✅ تم تغيير كلمة المرور بنجاح', 'success');
+            } catch (error) {
+                console.error(error);
+                showToast('❌ فشل تغيير كلمة المرور: ' + (error.message || 'خطأ غير معروف'), 'error');
+            }
+        };
 
         window.logoutUser = async function() {
             if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
