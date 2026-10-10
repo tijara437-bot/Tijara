@@ -422,6 +422,7 @@
                     </div>
                     <div class="user-actions">
                         ${p.role !== 'admin' ? `
+                            <button class="btn btn-primary" onclick="resetUserPassword('${p.username}')">🔑 إعادة تعيين كلمة المرور</button>
                             <button class="btn ${p.banned ? 'btn-success' : 'btn-warn'}" onclick="toggleBan('${p.id}', ${!p.banned})">
                                 ${p.banned ? '✅ إلغاء الحظر' : '🚫 حظر'}
                             </button>
@@ -431,6 +432,24 @@
                 </div>`;
             }).join('');
         }
+
+        window.resetUserPassword = async function(username) {
+            const newPassword = prompt(`أدخل كلمة مرور جديدة للمستخدم "${username}" (6 أحرف على الأقل):`);
+            if (newPassword === null) return; // ألغى
+            if (newPassword.length < 6) { showToast('❌ كلمة المرور قصيرة جدًا (6 أحرف على الأقل)', 'error'); return; }
+            if (!confirm(`سيتم تغيير كلمة مرور "${username}" فورًا إلى الكلمة الجديدة. هل أنت متأكد؟`)) return;
+            try {
+                const { data, error } = await sb.rpc('admin_reset_password', {
+                    target_username: username,
+                    new_password: newPassword
+                });
+                if (error) throw error;
+                showToast(`✅ تم تغيير كلمة مرور "${username}" بنجاح`, 'success');
+            } catch (error) {
+                console.error(error);
+                showToast('❌ فشل التغيير: ' + (error.message || 'خطأ غير معروف'), 'error');
+            }
+        };
 
         window.toggleBan = async function(userId, banned) {
             const action = banned ? 'حظر' : 'إلغاء حظر';
